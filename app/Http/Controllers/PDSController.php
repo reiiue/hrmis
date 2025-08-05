@@ -17,33 +17,56 @@ class PDSController extends Controller
         $countries = Country::orderBy('name')->get();
 
         return view('pds.index', compact('personalInfo', 'countries'));
-
     }
 
-    public function update(Request $request)
-    {
-        $user = auth()->user();
+    // Handle form submission
+public function update(Request $request)
+{
+    $user = auth()->user();
 
-        $request->validate([
-            'last_name' => 'required|string|max:255',
-            'first_name' => 'required|string|max:255',
-            'suffix' => 'nullable|string|max:10',
-            'middle_name' => 'nullable|string|max:255',
-            'date_of_birth' => 'required|date|max:100',
-            'place_of_birth' => 'required|string|max:255',
-        ]);
+    $request->validate([
+        'last_name' => 'required|string|max:255',
+        'first_name' => 'required|string|max:255',
+        'middle_name' => 'required|string|max:255',
+        'suffix' => 'nullable|string|max:255',
+        'date_of_birth' => 'required|date',
+        'place_of_birth' => 'required|string|max:255',
+        'sex' => 'required|in:Male,Female',
+        'citizenship' => 'required|string|in:Filipino,Dual Citizenship',
+        'dual_citizenship_type' => 'nullable|string|in:By Birth,By Naturalization',
+        'dual_citizenship_country_id' => 'nullable|exists:countries,id',
+    ]);
 
-        $user->personalInformation()->updateOrCreate([], [
-            'last_name' => $request->last_name,
-            'first_name' => $request->first_name,
-            'suffix' => $request->suffix,
-            'middle_name' => $request->middle_name,
-            'date_of_birth' => $request->date_of_birth,
-            'place_of_birth' => $request->place_of_birth,
-        ]);
+    $data = $request->only([
+        'last_name', 
+        'first_name',
+        'middle_name',
+        'suffix',
+        'date_of_birth',
+        'place_of_birth',
+        'sex',
+        'citizenship',
+    ]);
 
-        return redirect()->route('pds.index')->with('success', 'Personal Information updated successfully.');
+    // Add dual citizenship fields only if applicable
+    if ($request->citizenship === 'Dual Citizenship') {
+        $data['dual_citizenship_type'] = $request->dual_citizenship_type;
+        $data['dual_citizenship_country_id'] = $request->dual_citizenship_country_id;
+    } else {
+        $data['dual_citizenship_type'] = null;
+        $data['dual_citizenship_country_id'] = null;
     }
+
+    // Convert empty string to null (so "no data" is saved as NULL)
+    foreach ($data as $key => $value) {
+        $data[$key] = $value === '' ? null : $value;
+    }
+
+    // Update or create personal information
+    $user->personalInformation()->updateOrCreate([], $data);
+
+    return redirect()->route('pds.index')->with('success', 'Personal Information updated successfully.');
+}
 
 
 }

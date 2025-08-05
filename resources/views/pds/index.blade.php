@@ -21,200 +21,172 @@
         </form>
     </div>
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="pds-paper bg-white p-5 shadow">
-            <div class="text-center mb-4">
-                <h2 class="fw-bold">PERSONAL DATA SHEET</h2>
-                <p class="text-muted">Revised 2017 | Civil Service Commission</p>
+<!-- Main Content -->
+<div class="pds-container bg-white shadow-sm p-4">
+
+    <h4 class="mb-4 text-center">Personal Data Sheet (PDS)</h4>
+
+    <form method="POST" action="{{ route('pds.update') }}">
+        @csrf
+
+        <table class="table pds-table">
+            {{-- Header Row --}}
+            <tr>
+                <td colspan="4" class="pds-section-header">I. PERSONAL INFORMATION</td>
+            </tr>
+
+            {{-- 2. SURNAME --}}
+            <tr>
+                <td class="pds-label">2. SURNAME</td>
+                <td colspan = "4">
+                    <input type="text" name="last_name" class="pds-input-borderless"
+                        value="{{ old('last_name', $personalInfo->last_name ?? '') }}">
+                </td>
+            </tr>
+
+            {{-- FIRST NAME --}}
+            <tr>
+                <td class="pds-label">FIRST NAME</td>
+                <td>
+                    <input type="text" name="first_name" class="pds-input-borderless"
+                        value="{{ old('first_name', $personalInfo->first_name ?? '') }}">
+                </td>
+
+                    <td class="pds-label">Name Extension (Jr, Sr)</td>
+                <td colspan = "1">
+                    <input type="text" name="suffix" class="pds-input-borderless"
+                        value="{{ old('suffix', $personalInfo->suffix ?? '') }}">
+                </td>
+            </tr>
+
+            {{-- MIDDLE NAME --}}
+            <tr>
+                <td class="pds-label">MIDDLE NAME</td>
+                <td colspan="4">
+                    <input type="text" name="middle_name" class="pds-input-borderless"
+                        value="{{ old('middle_name', $personalInfo->middle_name ?? '') }}">
+                </td>
+            </tr>
+
+            {{-- DATE OF BIRTH, CITIZENSHIP --}}
+            <tr>
+                <td class="pds-label">3. DATE OF BIRTH<br><small>(mm/dd/yyyy)</small></td>
+                <td>
+                    <input type="date" name="date_of_birth" class="pds-input-borderless"
+                        value="{{ old('date_of_birth', optional($personalInfo)->date_of_birth ?: '') }}">
+                </td>
+
+                {{-- CITIZENSHIP LABEL AND OPTIONS --}}
+                <td class="pds-label" rowspan="3" style="background: #e0e0e0; vertical-align: top;">16. CITIZENSHIP<br><br>
+                    If holder of dual citizenship,<br>
+                    please indicate the details.
+                </td>
+                <td rowspan="3">
+                    <div class="d-flex align-items-center gap-3 mb-2">
+                        {{-- Filipino Option --}}
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="citizenship" id="filipino" value="Filipino"
+                                {{ old('citizenship', optional($personalInfo)->citizenship) == 'Filipino' ? 'checked' : '' }}
+                                onclick="toggleDualOptions()">
+                            <label class="form-check-label" for="filipino">Filipino</label>
+                        </div>
+
+                        {{-- Dual Citizenship Option --}}
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="citizenship" id="dual" value="Dual Citizenship"
+                                {{ old('citizenship', optional($personalInfo)->citizenship) == 'Dual Citizenship' ? 'checked' : '' }}
+                                onclick="toggleDualOptions()">
+                            <label class="form-check-label" for="dual">Dual Citizenship</label>
+                        </div>
+                    </div>
+
+                    {{-- If Dual Citizenship: by birth / by naturalization --}}
+                    <div id="dual-options" class="d-flex align-items-center gap-3 mb-2">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="dual_citizenship_type" id="by_birth" value="By Birth"
+                                {{ old('dual_citizenship_type', optional($personalInfo)->dual_citizenship_type) == 'By Birth' ? 'checked' : '' }}>
+                            <label class="form-check-label" for="by_birth">by birth</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="dual_citizenship_type" id="by_naturalization" value="By Naturalization"
+                                {{ old('dual_citizenship_type', optional($personalInfo)->dual_citizenship_type) == 'By Naturalization' ? 'checked' : '' }}>
+                            <label class="form-check-label" for="by_naturalization">by naturalization</label>
+                        </div>
+                    </div>
+
+                    {{-- Country Dropdown --}}
+                    <div id="country-container" class="mb-2">
+                        <label for="dual_citizenship_country_id" class="form-label">Pls. indicate country:</label>
+                            <select name="dual_citizenship_country_id" id="dual_citizenship_country_id" class="form-select small-dropdown">
+                                <option value="">Select Country</option>
+                                @foreach ($countries as $country)
+                                    <option value="{{ $country->id }}"
+                                        {{ old('dual_citizenship_country_id', optional($personalInfo)->dual_citizenship_country_id) == $country->id ? 'selected' : '' }}>
+                                        {{ $country->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                {{-- PLACE OF BIRTH --}}
+                <td class="pds-label">4. PLACE OF BIRTH</td>
+                <td>
+                    <input type="text" name="place_of_birth" class="pds-input-borderless"
+                         value="{{ old('place_of_birth', optional($personalInfo)->place_of_birth ?: '') }}">
+                </td>
+            </tr>
+
+                <tr>
+                    {{-- SEX --}}
+                    <td class="pds-label">5. SEX</td>
+                    <td>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="sex" id="male" value="Male"
+                                {{ old('sex', optional($personalInfo)->sex) == 'Male' ? 'checked' : '' }}>
+                            <label class="form-check-label" for="male">Male</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="sex" id="female" value="Female"
+                                {{ old('sex', optional($personalInfo)->sex) == 'Female' ? 'checked' : '' }}>
+                            <label class="form-check-label" for="female">Female</label>
+                        </div>
+                    </td>
+                </tr>
+
+
+            </table>
+
+            <div class="text-end mt-3">
+                <button type="submit" class="btn btn-primary">Save</button>
             </div>
-
-            {{-- Begin Form --}}
-            <form action="{{ route('pds.update') }}" method="POST">
-                @csrf
-                @method('POST') {{-- Or PUT if updating --}}
-                
-                <section class="pds-boxed-section">
-                    <div class="row no-gutters">
-                        <div class="col-12 pds-header">
-                            I. PERSONAL INFORMATION
-                        </div>
-                    </div>
-
-                    <div class="row no-gutters">
-                        <div class="col-2 pds-label">SURNAME</div>
-                        <div class="col-10 p-0">
-                            <input type="text" name="last_name" class="form-control pds-input" value="{{ old('last_name', $personalInfo->last_name ?? '') }}">
-                        </div>
-                    </div>
-
-                    <div class="row no-gutters">
-                        <div class="col-2 pds-label">FIRSTNAME</div>
-                        <div class="col-6 p-0">
-                            <input type="text" name="first_name" class="form-control pds-input-right" 
-                                value="{{ old('first_name', $personalInfo->first_name ?? '') }}">
-                        </div>
-                        <div class="col-2 pds-label-small text-end">NAME EXTENSION (Jr, Sr)</div>
-                        <div class="col-2 p-0">
-                            <input type="text" name="suffix" class="form-control pds-input"
-                                value="{{ old('suffix', $personalInfo->suffix ?? '') }}">
-                        </div>
-                    </div>
-
-                    <div class="row no-gutters">
-                        <div class="col-2 pds-label">MIDDLE NAME</div>
-                        <div class="col-10 p-0">
-                            <input type="text" name="middle_name" class="form-control pds-input" value="{{ old('middle_name', $personalInfo->middle_name ?? '') }}">
-                        </div>
-                    </div>
-
-                    <div class="row no-gutters">
-                        {{-- Date of Birth --}}
-                        <div class="col-2 pds-label">Date Of Birth</div>
-                        <div class="col-3 p-0">
-                            <input type="date" name="date_of_birth" class="form-control pds-input" 
-                                value="{{ old('date_of_birth', $personalInfo->date_of_birth ?? '') }}">
-                        </div>
-                    
-
-                        {{-- Citizenship --}}
-                        <div class="col-2 pds-label">Citizenship</div>
-                        <div class="col-4 p-0">
-                            <div class="pds-radio-wrapper d-flex align-items-center">
-                                <div class="form-check form-check-inline mb-0 pds-radio-row">
-                                    <input class="form-check-input" type="radio" name="citizenship" id="filipino" value="Filipino"
-                                        {{ old('citizenship', $personalInfo->citizenship ?? '') == 'Filipino' ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="filipino">Filipino</label>
-                                </div>
-                                <div class="form-check form-check-inline mb-0 pds-radio-row">
-                                    <input class="form-check-input" type="radio" name="citizenship" id="dual" value="Dual Citizenship"
-                                        {{ old('citizenship', $personalInfo->citizenship ?? '') == 'Dual Citizenship' ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="dual">Dual Citizenship</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-
-                    <div class="row no-gutters">
-                        <div class="col-2 pds-label">Place of Birth</div>
-                        <div class="col-3 p-0">
-                            <input type="text" name="place_of_birth" class="form-control pds-input" 
-                                value="{{ old('place_of_birth', $personalInfo->place_of_birth ?? '') }}">
-                        </div>
-
-                        {{-- Citizenship Radio Sub-options --}}
-                        <div class="col-2 pds-label"></div>
-                        <div class="col-4 p-0 by-options-wrapper">
-                            <div class="pds-radio-wrapper d-flex align-items-center flex-wrap">
-                                <div class="form-check form-check-inline mb-0 pds-radio-row by-options">
-                                    <input class="form-check-input" type="radio" name="dual_citizenship_type" id="by_birth" value="By Birth"
-                                        {{ old('dual_citizenship_type', $personalInfo->dual_citizenship_type ?? '') == 'By Birth' ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="by_birth">by birth</label>
-                                </div>
-                                <div class="form-check form-check-inline mb-0 pds-radio-row by-options">
-                                    <input class="form-check-input" type="radio" name="dual_citizenship_type" id="naturalization" value="By Naturalization"
-                                        {{ old('dual_citizenship_type', $personalInfo->dual_citizenship_type ?? '') == 'By Naturalization' ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="naturalization">by naturalization</label>
-                                </div>
-                            </div>
-                        </div>                     
-                    </div>
-
-
-                    {{-- Sex --}}
-                    <div class="row no-gutters">
-                        <div class="col-2 pds-label">Sex</div>
-                        <div class="col-3 p-0">
-                            <div class="pds-radio-wrapper d-flex align-items-center">
-                                <div class="form-check form-check-inline mb-0 pds-radio-row">
-                                    <input class="form-check-input" type="radio" name="sex" id="male" value="Male"
-                                        {{ old('sex', $personalInfo->sex ?? '') == 'Male' ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="male">Male</label>
-                                </div>
-                                <div class="form-check form-check-inline mb-0 pds-radio-row">
-                                    <input class="form-check-input" type="radio" name="sex" id="female" value="Female"
-                                        {{ old('sex', $personalInfo->sex ?? '') == 'Female' ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="female">Female</label>
-                                </div>
-                            </div>
-                        </div>
-                         <div class="col-2 pds-label"></div>
-{{-- Country Dropdown Container: always visible with border --}}
-<div class="col-5 p-0">
-    <div class="country-dropdown-wrapper">
-        <select name="dual_citizenship_country_id" id="dual-country-select"
-            class="form-control country-select">
-            <option value="">-- Select Country --</option>
-            @foreach($countries as $country)
-                <option value="{{ $country->id }}"
-                    {{ old('dual_citizenship_country_id', $personalInfo->dual_citizenship_country_id ?? '') == $country->id ? 'selected' : '' }}>
-                    {{ $country->name }}
-                </option>
-            @endforeach
-        </select>
-    </div>
+    </form>
 </div>
 
-                    </div>
-
-
-
-
-
-                </section>
-
-                    <button type="submit" class="btn btn-primary mt-3">Save</button>
-                </form>
-
-                    {{-- Add other fields later like date of birth, sex, etc. --}}
-            </section>
-        </div>
-    </div>
-</div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const dualCitizenshipRadio = document.getElementById('dual');
-        const filipinoRadio = document.getElementById('filipino');
-        const byOptions = document.querySelectorAll('.by-options');
+    function toggleDualOptions() {
+        const isDual = document.getElementById('dual').checked;
 
-        function toggleByOptions() {
-            const isDual = dualCitizenshipRadio.checked;
-            byOptions.forEach(option => {
-                option.style.display = isDual ? 'inline-block' : 'none';
-            });
-        }
-
-        // Initial check on page load
-        toggleByOptions();
-
-        // Listen for changes
-        dualCitizenshipRadio.addEventListener('change', toggleByOptions);
-        filipinoRadio.addEventListener('change', toggleByOptions);
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const select = document.getElementById('dual-country-select');
-        const dualOptions = document.querySelectorAll('input[name="dual_citizenship_type"]');
-
-        function toggleSelect() {
-            const selected = document.querySelector('input[name="dual_citizenship_type"]:checked');
-            if (selected && selected.value === "By Naturalization") {
-                select.style.display = 'block';
-                select.disabled = false;
-            } else {
-                select.style.display = 'none';
-                select.disabled = true;
-            }
-        }
-
-        toggleSelect(); // run on load
-
+        // Dual type radio buttons
+        const dualOptions = document.querySelectorAll('#dual-options input');
         dualOptions.forEach(option => {
-            option.addEventListener('change', toggleSelect);
+            option.disabled = !isDual;
+            if (!isDual) option.checked = false;
         });
-    });
-</script>
 
+        // Country dropdown
+        const countrySelect = document.getElementById('dual_citizenship_country_id');
+        countrySelect.disabled = !isDual;
+        if (!isDual) {
+            countrySelect.selectedIndex = 0; // reset to placeholder
+        }
+    }
+
+    // Run on page load
+    window.onload = toggleDualOptions;
+</script>
 @endsection

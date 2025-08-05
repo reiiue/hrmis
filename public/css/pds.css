@@ -10,125 +10,49 @@
 
 .section-title {
     font-weight: bold;
-    border-bottom: 2px solid #444;
-    padding-bottom: 5px;
-    margin-bottom: 15px;
-    text-transform: uppercase;
+    font-size: 16px;
+    border-bottom: 2px solid #000;
+    padding-bottom: 4px;
+    margin-bottom: 10px;
 }
 
-.pds-paper {
-    width: 816px; /* Legal paper width (8.5in x 96dpi) */
-    min-height: 1056px; /* Legal paper height */
-    background-color: #fff;
-    margin: auto;
-    padding: 40px;
-    border: 1px solid #ccc;
-    font-family: 'Arial', sans-serif;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+.pds-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
 }
 
-.section-title {
+.pds-table td {
+    border: 1px solid #000;
+    padding: 4px 6px;
+    vertical-align: middle;
+}
+
+.pds-section-header {
     font-weight: bold;
-    border-bottom: 2px solid #444;
-    padding-bottom: 5px;
-    margin-bottom: 20px;
-    text-transform: uppercase;
+    font-size: 15px;
+    background-color: #f0f0f0;
 }
 
-
-
-
-/* Header inside the box */
-.pds-header {
-    background-color: #666;
-    color: white;
+.pds-label {
     font-weight: bold;
-    font-style: italic;
-    text-transform: uppercase;
-    padding: 6px 10px;
-    border-bottom: 1px solid #333;
-    font-size: 14px;
-}
-
-/* Label style */
-.pds-label{
-    background-color: #e5e5e5;
-    font-weight: bold;
+    width: 17%;
     font-size: 12px;
-    border-top: 1px solid #333;
-    border-right: 1px solid #333;
-    border-left: 1px solid #333;
-    border-bottom: none;
-    min-height: 40px;
-    display: flex;
-    align-items: center;
 }
 
-.pds-label-small{
-    background-color: #e5e5e5;
-    font-weight: bold;
-    font-size: 10px;
-    border-top: 1px solid #333;
-    border-right: 1px solid #333;
-    border-left: 1px solid #333;
-    border-bottom: none;
-    min-height: 40px;
-    display: flex;
-    align-items: center;
-}
-
-
-/* Input style */
-.pds-input {
-    border-top: 1px solid #333;
-    border-left: none;
-    border-right: 1px solid #333;
-    border-radius: 0;
-    height: 40px;
-    font-size: 14px;
+.pds-input-borderless {
     width: 100%;
-}
-
-.pds-input-right{
-    border-top: 1px solid #333;
-    border-left: none;
-    border-radius: 0;
-    height: 40px;
-    font-size: 14px;
-    width: 100%;
-}
-
-.pds-radio-row label {
-    white-space: nowrap;
-    font-size: 14px;
-}
-
-.pds-radio-wrapper {
-    border-top: 1px solid #333;
-    border-right: 1px solid #333;
-    padding: 6px 10px;
-    height: 38px; /* match .form-control height */
-    width: 125%;
-    background-color: white;
-}
-
-
-.by-options {
-    display: none;
-}
-
-.country-dropdown-wrapper {
-    height: 38px;
-    padding: 0 8px;
-    display: flex;
-    align-items: center;
-    border: 1px solid #000000; /* Bootstrap border color */
-}
-
-.country-select {
+    height: 28px;
+    font-size: 13px;
     border: none;
-    padding: 0;
-    height: 100%;
-    width: 100%;
-    display: none;
+    outline: none;
+    padding: 2px 4px;
+    background-color: transparent;
+}
+
+.small-dropdown {
+    padding: 2px 6px;
+    font-size: 0.85rem;
+    width: 150px;
+    height: 30px;
 }
