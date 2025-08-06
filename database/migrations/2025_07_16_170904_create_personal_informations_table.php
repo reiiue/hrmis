@@ -11,17 +11,17 @@ return new class extends Migration
         Schema::create('personal_informations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->string('first_name');
-            $table->string('last_name');
+            $table->string('first_name')->nullable();
+            $table->string('last_name')->nullable();
             $table->string('middle_name')->nullable();
             $table->string('suffix')->nullable();
-            $table->date('date_of_birth');
-            $table->string('place_of_birth');
-            $table->enum('citizenship', ['Filipino', 'Dual Citizenship']);
+            $table->date('date_of_birth')->nullable();
+            $table->string('place_of_birth')->nullable();
+            $table->enum('citizenship', ['Filipino', 'Dual Citizenship'])->nullable();
             $table->enum('dual_citizenship_type', ['By Birth', 'By Naturalization'])->nullable();
             $table->unsignedBigInteger('dual_citizenship_country_id')->nullable();
-            $table->enum('sex', ['Male', 'Female']);
-            $table->enum('civil_status', ['Single', 'Married', 'Widowed', 'Separated', 'Others']);
+            $table->enum('sex', ['Male', 'Female'])->nullable();
+            $table->enum('civil_status', ['Single', 'Married', 'Widowed', 'Separated', 'Others'])->nullable();
             $table->decimal('height', 5, 2)->nullable();
             $table->decimal('weight', 5, 2)->nullable();
             $table->enum('blood_type', ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'])->nullable();

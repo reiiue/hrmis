@@ -49,4 +49,9 @@ class PersonalInformation extends Model
     {
         return $this->belongsTo(Country::class, 'dual_citizenship_country_id');
     }
+
+    public function addresses()
+    {
+        return $this->hasMany(Address::class);
+    }
 }
