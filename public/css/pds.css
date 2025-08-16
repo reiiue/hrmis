@@ -1,7 +1,7 @@
 .pds-container {
     width: 816px; /* Legal paper width */
     min-height: 1056px; /* Legal paper height */
-    margin: 0 auto;
+    margin-left: 250px; /* Pushes it to the right */
     background-color: #fff;
     border: 1px solid #ccc;
     padding: 30px;
@@ -48,7 +48,7 @@
 .pds-input-borderless {
     width: 100%;
     height: 28px;
-    font-size: 13px;
+    font-size: 14px;
     border: none;
     outline: none;
     padding: 2px 4px;
@@ -63,11 +63,30 @@
 }
 
 
-.pds-input-noborder {
-    border: none !important;
+.address-input {
+    border: none;
+    border-bottom: 1px solid #000;
     border-radius: 0;
-    box-shadow: none;
-    outline: none;
+    width: 100%;
+    font-size: 14px;
+    padding: 5px 8px 2px;
     background-color: transparent;
-    padding: 2px 4px;
+    text-align: center;
 }
+
+.address-input:focus {
+    outline: none;
+    box-shadow: none;
+    border-bottom: 1px solid #00acf0;
+}
+
+.address-label {
+    font-size: 13px;
+    margin-top: 2px;
+    text-align: center;
+    font-weight: bold;
+}
+
+
+
+

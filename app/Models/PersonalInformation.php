@@ -54,4 +54,10 @@ class PersonalInformation extends Model
     {
         return $this->hasMany(Address::class);
     }
+
+        // Relationship to Government IDs
+    public function governmentIds()
+    {
+        return $this->hasMany(GovernmentId::class, 'personal_information_id');
+    }
 }

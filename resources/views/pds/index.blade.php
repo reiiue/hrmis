@@ -48,13 +48,13 @@
             <tr>
                 <td class="pds-label">FIRST NAME</td>
                 <td colspan = "4">
-                    <input type="text" name="first_name" class="pds-input-borderless"
+                    <input type="text" name="first_name" class="form-control pds-input-borderless"
                         value="{{ old('first_name', $personalInfo->first_name ?? '') }}">
                 </td>
 
                     <td class="pds-label">Name Extension (Jr, Sr)</td>
                 <td colspan = "1">
-                    <input type="text" name="suffix" class="pds-input-borderless"
+                    <input type="text" name="suffix" class="form-control pds-input-borderless"
                         value="{{ old('suffix', $personalInfo->suffix ?? '') }}">
                 </td>
             </tr>
@@ -63,7 +63,7 @@
             <tr>
                 <td class="pds-label">MIDDLE NAME</td>
                 <td colspan="6">
-                    <input type="text" name="middle_name" class="pds-input-borderless"
+                    <input type="text" name="middle_name" class="form-control pds-input-borderless"
                         value="{{ old('middle_name', $personalInfo->middle_name ?? '') }}">
                 </td>
             </tr>
@@ -73,7 +73,7 @@
                 <td class="pds-label">3. DATE OF BIRTH<br><small>(mm/dd/yyyy)</small></td>
                 <td colspan="2">
                     {{-- Date of Birth Input --}}
-                    <input type="date" name="date_of_birth" class="pds-input-borderless"
+                    <input type="date" name="date_of_birth" class="form-control pds-input-borderless"
                         value="{{ old('date_of_birth', optional($personalInfo)->date_of_birth ?: '') }}">
                 </td>
 
@@ -136,28 +136,27 @@
                 {{-- PLACE OF BIRTH --}}
                 <td class="pds-label">4. PLACE OF BIRTH</td>
                 <td>
-                    <input type="text" name="place_of_birth" class="pds-input-borderless"
+                    <input type="text" name="place_of_birth" class="form-control pds-input-borderless"
                          value="{{ old('place_of_birth', optional($personalInfo)->place_of_birth ?: '') }}">
                 </td>
             </tr>
 
-                <tr>
-                    {{-- SEX --}}
-                    <td class="pds-label">5. SEX</td>
-                    <td>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="sex" id="male" value="Male"
-                                {{ old('sex', optional($personalInfo)->sex) == 'Male' ? 'checked' : '' }}>
-                            <label class="form-check-label" for="male">Male</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="sex" id="female" value="Female"
-                                {{ old('sex', optional($personalInfo)->sex) == 'Female' ? 'checked' : '' }}>
-                            <label class="form-check-label" for="female">Female</label>
-                        </div>
-                    </td>
-                </tr>
-
+            <tr>
+                {{-- SEX --}}
+                <td class="pds-label">5. SEX</td>
+                <td>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="sex" id="male" value="Male"
+                            {{ old('sex', optional($personalInfo)->sex) == 'Male' ? 'checked' : '' }}>
+                        <label class="form-check-label" for="male">Male</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="sex" id="female" value="Female"
+                            {{ old('sex', optional($personalInfo)->sex) == 'Female' ? 'checked' : '' }}>
+                        <label class="form-check-label" for="female">Female</label>
+                    </div>
+                </td>
+            </tr>
 
 
 
@@ -167,59 +166,61 @@
                         <strong>6. CIVIL STATUS</strong>
                     </td>
                     <td colspan="2">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="civil_status" value="Single" {{ old('civil_status', $personalInfo->civil_status ?? '') == 'Single' ? 'checked' : '' }}>
-                            <label class="form-check-label">Single</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="civil_status" value="Married" {{ old('civil_status', $personalInfo->civil_status ?? '') == 'Married' ? 'checked' : '' }}>
-                            <label class="form-check-label">Married</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="civil_status" value="Widowed" {{ old('civil_status', $personalInfo->civil_status ?? '') == 'Widowed' ? 'checked' : '' }}>
-                            <label class="form-check-label">Widowed</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="civil_status" value="Separated" {{ old('civil_status', $personalInfo->civil_status ?? '') == 'Separated' ? 'checked' : '' }}>
-                            <label class="form-check-label">Separated</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="civil_status" value="Others" {{ old('civil_status', $personalInfo->civil_status ?? '') == 'Others' ? 'checked' : '' }}>
-                            <label class="form-check-label">Other/s:</label>
-                        </div>
+                        @foreach (['Single', 'Married', 'Widowed', 'Separated', 'Others'] as $status)
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="civil_status" value="{{ $status }}"
+                                    {{ old('civil_status', $personalInfo->civil_status ?? '') == $status ? 'checked' : '' }}>
+                                <label class="form-check-label">{{ $status }}</label>
+                            </div>
+                        @endforeach
                     </td>
 
-                    <!-- Residential Address Label -->
-                    <td class="pds-label text-center align-middle" rowspan="4" style="width: 15%;">
-                        <strong>17. RESIDENTIAL ADDRESS</strong><br><br>
-                        ZIP CODE
+                    <!-- Residential Address Label + ZIP Code -->
+                    <td class="pds-label text-center align-top" rowspan="3" style="width: 15%; background-color: #f0f0f0;">
+                        <strong>17. RESIDENTIAL ADDRESS</strong>
+                        <br><br>
+                        <input type="text" name="address[residential][zip_code]"
+                            class="form-control address-input mt-2"
+                            value="{{ old('address.residential.zip_code', $residentialAddress->zip_code ?? '') }}">
+                        <div class="address-label"><em>ZIP CODE</em></div>
                     </td>
+
+                    <!-- House/Block/Lot No. / Street -->
                     <td colspan="2">
-                        <input type="hidden" name="address[residential][address_type]" value="Residential">
-                        <input type="text" name="address[residential][house_block_lot_no]" class="form-control pds-input pds-input-noborder"
-                            placeholder="House/Block/Lot No." value="{{ old('address.residential.house_block_lot_no', $residentialAddress->house_block_lot_no ?? '') }}">
+                        <input type="text" name="address[residential][house_block_lot_no]" 
+                                class="address-input"
+                                value="{{ old('address.residential.house_block_lot_no', $residentialAddress->house_block_lot_no ?? '') }}">
+                            <strong><em>House/Block/Lot No.</em></strong>
                     </td>
-                    <td>
-                        <input type="text" name="address[residential][street]" class="form-control pds-input pds-input-noborder"
-                            placeholder="Street" value="{{ old('address.residential.street', $residentialAddress->street ?? '') }}">
+                        
+                    <td colspan="3">
+                        <input type="text" name="address[residential][street]" 
+                                class="address-input"
+                                value="{{ old('address.residential.street', $residentialAddress->street ?? '') }}">
+                            <div class="address-label"><em>Street</em></div>
                     </td>
                 </tr>
-                
+
                 <tr>
                     <!-- Height -->
                     <td class="pds-label"><strong>7. HEIGHT (m)</strong></td>
                     <td colspan="2">
-                        <input type="text" name="height" class="form-control pds-input pds-input-noborder" value="{{ old('height', $personalInfo->height ?? '') }}">
+                        <input type="text" name="height" class="form-control pds-input-borderless"
+                            value="{{ old('height', $personalInfo->height ?? '') }}">
                     </td>
 
                     <!-- Subdivision / Barangay -->
                     <td colspan="2">
-                        <input type="text" name="address[residential][subdivision]" class="form-control pds-input pds-input-noborder"
-                            placeholder="Subdivision/Village" value="{{ old('address.residential.subdivision', $residentialAddress->subdivision ?? '') }}">
+                        <input type="text" name="address[residential][subdivision]" 
+                            class="form-control address-input"
+                            value="{{ old('address.residential.subdivision', $residentialAddress->subdivision ?? '') }}">
+                        <div class="address-label"><em>Subdivision/Village</em></div>
                     </td>
                     <td>
-                        <input type="text" name="address[residential][barangay]" class="form-control pds-input pds-input-noborder"
-                            placeholder="Barangay" value="{{ old('address.residential.barangay', $residentialAddress->barangay ?? '') }}">
+                        <input type="text" name="address[residential][barangay]" 
+                            class="form-control address-input"
+                            value="{{ old('address.residential.barangay', $residentialAddress->barangay ?? '') }}">
+                        <div class="address-label"><em>Barangay</em></div>
                     </td>
                 </tr>
 
@@ -227,19 +228,190 @@
                     <!-- Weight -->
                     <td class="pds-label"><strong>8. WEIGHT (kg)</strong></td>
                     <td colspan="2">
-                        <input type="text" name="weight" class="form-control pds-input pds-input-borderless" value="{{ old('weight', $personalInfo->weight ?? '') }}">
+                        <input type="text" name="weight" class="form-control pds-input-borderless""
+                            value="{{ old('weight', $personalInfo->weight ?? '') }}">
                     </td>
 
                     <!-- City / Province -->
                     <td colspan="2">
-                        <input type="text" name="address[residential][city]" class="form-control pds-input pds-input-borderless"
-                            placeholder="City/Municipality" value="{{ old('address.residential.city', $residentialAddress->city ?? '') }}">
+                        <input type="text" name="address[residential][city]" 
+                            class="form-control address-input"
+                            value="{{ old('address.residential.city', $residentialAddress->city ?? '') }}">
+                        <div class="address-label"><em>City/Municipality</em></div>
                     </td>
                     <td>
-                        <input type="text" name="address[residential][province]" class="form-control pds-input pds-input-borderless"
-                            placeholder="Province" value="{{ old('address.residential.province', $residentialAddress->province ?? '') }}">
+                        <input type="text" name="address[residential][province]" 
+                            class="form-control address-input"
+                            value="{{ old('address.residential.province', $residentialAddress->province ?? '') }}">
+                        <div class="address-label"><em>Province</em></div>
+                    </td>
+                </tr>
+
+
+                <tr>
+
+                    <!-- Blood Type -->
+                    <td class="pds-label" style="width: 20%;">
+                        <strong>9. BLOOD TYPE</strong>
+                    </td>
+                    <td colspan="2">
+                        <select name="blood_type" class="form-select pds-input-borderless">
+                            <option value="">-- Select --</option>
+                            @foreach (['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'] as $type)
+                                <option value="{{ $type }}" 
+                                    {{ old('blood_type', $personalInfo->blood_type ?? '') == $type ? 'selected' : '' }}>
+                                    {{ $type }}
+                                </option>
+                            @endforeach
+                        </select>
                     </td>
 
+                    <!-- Permanent Address Label + ZIP Code -->
+                    <td class="pds-label text-center align-top" rowspan="4" style="width: 15%; background-color: #f0f0f0;">
+                        <strong>18. PERMANENT ADDRESS</strong>
+                        <br><br><br><br><br><br><br><br>
+                        <div class="address-label"><em>ZIP CODE</em></div>
+                    </td>
+
+                    <!-- House/Block/Lot No. / Street -->
+                    <td colspan="2">
+                        <input type="text" name="address[permanent][house_block_lot_no]" 
+                            class="address-input"
+                            value="{{ old('address.permanent.house_block_lot_no', $permanentAddress->house_block_lot_no ?? '') }}">
+                        <strong><em>House/Block/Lot No.</em></strong>
+                    </td>
+                        
+                    <td colspan="3">
+                        <input type="text" name="address[permanent][street]" 
+                            class="address-input"
+                            value="{{ old('address.permanent.street', $permanentAddress->street ?? '') }}">
+                        <div class="address-label"><em>Street</em></div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <!-- GSIS ID NO. -->
+                    <td class="pds-label"><strong>10. GSIS ID NO.</strong></td>
+                    <td colspan="2">
+                        <input type="text" name="gsis_id" 
+                            class="form-control pds-input-borderless"
+                            value="{{ old('gsis_id', $governmentIds->gsis_id ?? '') }}">
+                    </td>
+
+                    <!-- Subdivision / Barangay -->
+                    <td colspan="2">
+                        <input type="text" name="address[permanent][subdivision]" 
+                            class="form-control address-input"
+                            value="{{ old('address.permanent.subdivision', $permanentAddress->subdivision ?? '') }}">
+                        <div class="address-label"><em>Subdivision/Village</em></div>
+                    </td>
+                    <td>
+                        <input type="text" name="address[permanent][barangay]" 
+                            class="form-control address-input"
+                            value="{{ old('address.permanent.barangay', $permanentAddress->barangay ?? '') }}">
+                        <div class="address-label"><em>Barangay</em></div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <!-- PAG-IBIG ID NO. -->
+                    <td class="pds-label"><strong>11. PAG-IBIG ID NO.</strong></td>
+                    <td colspan="2">
+                        <input type="text" name="pagibig_id" 
+                            class="form-control pds-input-borderless"
+                            value="{{ old('pagibig_id', $governmentIds->pagibig_id ?? '') }}">
+                    </td>
+
+                    <!-- City / Province -->
+                    <td colspan="2">
+                        <input type="text" name="address[permanent][city]" 
+                            class="form-control address-input"
+                            value="{{ old('address.permanent.city', $permanentAddress->city ?? '') }}">
+                        <div class="address-label"><em>City/Municipality</em></div>
+                    </td>
+                    <td>
+                        <input type="text" name="address[permanent][province]" 
+                            class="form-control address-input"
+                            value="{{ old('address.permanent.province', $permanentAddress->province ?? '') }}">
+                        <div class="address-label"><em>Province</em></div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <!-- PHILHEALTH NO. -->
+                    <td class="pds-label"><strong>12. PHILHEALTH NO.</strong></td>
+                    <td colspan="2">
+                        <input type="text" name="philhealth_id" 
+                            class="form-control pds-input-borderless"
+                            value="{{ old('philhealth_id', $governmentIds->philhealth_id ?? '') }}">
+                    </td>
+
+                    <!-- City / Province -->
+                    <td colspan="3">
+                        <input type="text" name="address[permanent][zip_code]"
+                            class="form-control address-input"
+                            value="{{ old('address.permanent.zip_code', $permanentAddress->zip_code ?? '') }}">
+                    </td>
+
+                </tr>
+
+                <tr>
+                    <!-- SSS NO. -->
+                    <td class="pds-label"><strong>13. SSS NO.</strong></td>
+                    <td colspan="2">
+                        <input type="text" name="sss_id" 
+                            class="form-control pds-input-borderless"
+                            value="{{ old('sss_id', $governmentIds->sss_id ?? '') }}">
+                    </td>
+
+                    <!-- TELEPHONE NO. -->
+                    <td class="pds-label"><strong>19. TELEPHONE NO.</strong></td>
+                    <td colspan="3">
+                        <input type="text" name="telephone_no" 
+                            class="form-control pds-input-borderless"
+                            value="{{ old('telephone_no', $personalInfo->telephone_no ?? '') }}">
+                    </td>
+                </tr>
+
+                <tr>
+                    <!--TIN NO. -->
+                    <td class="pds-label">14. TIN NO.</td>
+                    <td colspan="2" >
+                        <input type="text" name="tin_id" 
+                            class="form-control pds-input-borderless"
+                            value="{{ old('tin_id', $governmentIds->tin_id ?? '') }}">
+                    </td>
+
+                    <!-- MOBILE NO. -->
+                    <td class="pds-label">20. MOBILE NO.</td>
+                    <td colspan="3">
+                        <input type="text" name="mobile_no" 
+                            class="form-control pds-input-borderless"
+                            value="{{ old('mobile_no', $personalInfo->mobile_no ?? '') }}">
+                    </td>
+                </tr> 
+
+                <tr>
+                    <!-- Agency Employee No. -->
+                    <td class="pds-label">15. AGENCY EMPLOYEE NO.</td>
+                    <td colspan="2">
+                        <input type="text" name="agency_employee_no" 
+                            class="form-control pds-input-borderless"
+                            value="{{ old('agency_employee_no', $personalInfo->agency_employee_no ?? '') }}">
+                    </td>
+
+                    <!-- Email -->
+                    <td class="pds-label">15. EMAIL ADDRESS.</td>
+                    <td colspan="3">
+                        <input type="text" name="email" 
+                            class="form-control pds-input-borderless"
+                            value="{{ old('email', $personalInfo->email ?? '') }}">
+                    </td>
+                </tr>
+
+                
+                <tr>
+                    <td colspan="7" class="pds-section-header">II. FAMILY BACKGROUND</td>
                 </tr>
 
 
@@ -247,15 +419,14 @@
 
 
 
-
-
-
-
             </table>
+            
 
-            <div class="text-end mt-3">
-                <button type="submit" class="btn btn-primary">Save</button>
-            </div>
+<div class="text-end mt-3">
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a href="{{ route('pdf.download') }}" target="_blank" class="btn btn-success">Download PDF</a>
+</div>
+
     </form>
 </div>
 

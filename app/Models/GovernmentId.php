@@ -5,22 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Address extends Model
+class GovernmentId extends Model
 {
     use HasFactory;
 
-    protected $table = 'addresses';
+    protected $table = 'government_ids';
 
     protected $fillable = [
         'personal_information_id',
-        'address_type',
-        'house_block_lot_no',
-        'street',
-        'subdivision',
-        'barangay',
-        'city',
-        'province',
-        'zip_code',
+        'gsis_id',
+        'pagibig_id',
+        'philhealth_id',
+        'sss_id',
+        'tin_id',
     ];
 
     public function personalInformation()

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PDSController;
+use App\Http\Controllers\PDFController;
 
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -24,3 +25,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/pds/update', [PDSController::class, 'update'])->name('pds.update');
     
 });
+
+Route::get('/download-pdf', [PDFController::class, 'download'])->name('pdf.download');
+
+
+
