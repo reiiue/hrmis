@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\PersonalInformation;
+use App\Models\Spouse;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Country;
 use App\Models\Address;
-use App\Models\GovernmentId; // <-- Add this
+use App\Models\GovernmentId;
 
 class PDSController extends Controller
 {
@@ -19,7 +20,8 @@ class PDSController extends Controller
 
         $residentialAddress = null;
         $permanentAddress = null;
-        $governmentIds = null; // <-- Add this
+        $governmentIds = null;
+        $spouse = null; // <-- Add spouse here
 
         if ($personalInfo) {
             $residentialAddress = $personalInfo->addresses()
@@ -30,7 +32,9 @@ class PDSController extends Controller
                 ->where('address_type', 'Permanent')
                 ->first();
 
-            $governmentIds = $personalInfo->governmentIds()->first(); // <-- Get IDs
+            $governmentIds = $personalInfo->governmentIds()->first();
+
+            $spouse = $personalInfo->spouse()->first(); // <-- Load spouse data
         }
 
         return view('pds.index', compact(
@@ -38,7 +42,8 @@ class PDSController extends Controller
             'countries',
             'residentialAddress',
             'permanentAddress',
-            'governmentIds'
+            'governmentIds',
+            'spouse'
         ));
     }
 
@@ -67,15 +72,25 @@ class PDSController extends Controller
             'agency_employee_no' => 'nullable|string|max:50',
             'email' => 'nullable|string|max:255',
 
-            //Government IDs
+            // Government IDs
             'gsis_id' => 'nullable|string|max:50',
-            'pagibig_id' => 'nullable|string|max:50', 
+            'pagibig_id' => 'nullable|string|max:50',
             'philhealth_id' => 'nullable|string|max:50',
             'sss_id' => 'nullable|string|max:50',
             'tin_no' => 'nullable|string|max:20',
 
+            // Spouse
+            'last_name' => 'nullable|string|max:255',
+            'spouse_first_name' => 'nullable|string|max:255',
+            'spouse_middle_name' => 'nullable|string|max:255',
+            'spouse_name_extension' => 'nullable|string|max:10',
+            'spouse_occupation' => 'nullable|string|max:255',
+            'employer_business_name' => 'nullable|string|max:255',
+            'business_address' => 'nullable|string|max:255',
+            'spouse_telephone_no' => 'nullable|string|max:255',
         ]);
 
+        // Save Personal Information
         $data = $request->only([
             'last_name', 
             'first_name',
@@ -89,7 +104,7 @@ class PDSController extends Controller
             'height',
             'weight',
             'blood_type',
-            `telephone_no`,
+            'telephone_no',
             'mobile_no',
             'agency_employee_no',
             'email',
@@ -117,15 +132,7 @@ class PDSController extends Controller
                     'personal_information_id' => $personalInformation->id,
                     'address_type' => 'Residential',
                 ],
-                [
-                    'house_block_lot_no' => $residential['house_block_lot_no'] ?? null,
-                    'street' => $residential['street'] ?? null,
-                    'subdivision' => $residential['subdivision'] ?? null,
-                    'barangay' => $residential['barangay'] ?? null,
-                    'city' => $residential['city'] ?? null,
-                    'province' => $residential['province'] ?? null,
-                    'zip_code' => $residential['zip_code'] ?? null,
-                ]
+                $residential
             );
         }
 
@@ -136,15 +143,7 @@ class PDSController extends Controller
                     'personal_information_id' => $personalInformation->id,
                     'address_type' => 'Permanent',
                 ],
-                [
-                    'house_block_lot_no' => $permanent['house_block_lot_no'] ?? null,
-                    'street' => $permanent['street'] ?? null,
-                    'subdivision' => $permanent['subdivision'] ?? null,
-                    'barangay' => $permanent['barangay'] ?? null,
-                    'city' => $permanent['city'] ?? null,
-                    'province' => $permanent['province'] ?? null,
-                    'zip_code' => $permanent['zip_code'] ?? null,
-                ]
+                $permanent
             );
         }
 
@@ -158,7 +157,24 @@ class PDSController extends Controller
                 'pagibig_id' => $request->input('pagibig_id') ?? null,
                 'philhealth_id' => $request->input('philhealth_id') ?? null,
                 'sss_id' => $request->input('sss_id') ?? null,
-                'tin_id' => $request->input('tin_id') ?? null,
+                'tin_no' => $request->input('tin_no') ?? null,
+            ]
+        );
+
+        // --- Spouse Information ---
+        Spouse::updateOrCreate(
+            [
+                'personal_information_id' => $personalInformation->id,
+            ],
+            [
+                'last_name' => $request->input('spouse_last_name') ?? null,
+                'first_name' => $request->input('spouse_first_name') ?? null,
+                'middle_name' => $request->input('spouse_middle_name') ?? null,
+                'name_extension' => $request->input('spouse_name_extension') ?? null,
+                'occupation' => $request->input('spouse_occupation') ?? null,
+                'employer_business_name' => $request->input('employer_business_name') ?? null,
+                'business_address' => $request->input('business_address') ?? null,
+                'telephone_no' => $request->input('telephone_no') ?? null,
             ]
         );
 

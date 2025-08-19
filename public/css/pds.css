@@ -39,7 +39,7 @@
     background-color: #e0e0e0 !important;
     font-weight: bold;
     padding: 6px 8px;
-    font-size: 13px;
+    font-size: 12px;
     vertical-align: middle;
 }
 
@@ -85,6 +85,11 @@
     margin-top: 2px;
     text-align: center;
     font-weight: bold;
+}
+
+table {
+    table-layout: fixed;
+    width: 100%;
 }
 
 

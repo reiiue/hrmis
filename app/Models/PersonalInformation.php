@@ -60,4 +60,11 @@ class PersonalInformation extends Model
     {
         return $this->hasMany(GovernmentId::class, 'personal_information_id');
     }
+
+    // Relationship to Spouse
+    public function spouse()
+    {
+        return $this->hasOne(Spouse::class);
+    }
+
 }
