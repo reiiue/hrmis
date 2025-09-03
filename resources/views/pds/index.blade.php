@@ -33,6 +33,9 @@
  
             @include('pds.personal_information')
             @include('pds.family_background')
+            @include('pds.education')
+            @include('pds.civil_service_eligibility')
+            @include('pds.work_experience')
 
         </table>
             

@@ -1,5 +1,5 @@
 .pds-container {
-    width: 816px; /* Legal paper width */
+    width: 1000px; /* Legal paper width */
     min-height: 1056px; /* Legal paper height */
     margin-left: 250px; /* Pushes it to the right */
     background-color: #fff;
@@ -39,7 +39,7 @@
     background-color: #e0e0e0 !important;
     font-weight: bold;
     padding: 6px 8px;
-    font-size: 12px;
+    font-size: 11px;
     vertical-align: middle;
 }
 

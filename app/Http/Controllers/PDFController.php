@@ -25,6 +25,8 @@ class PDFController extends Controller
         $suffix      = $personalInfo?->suffix ?? '';
         $date_of_birth = $personalInfo?->date_of_birth ?? '';
         $place_of_birth = $personalInfo?->place_of_birth ?? '';
+        $sex         = $personalInfo?->sex ?? '';
+        $civil_status = $personalInfo?->civil_status ?? '';
 
         // Get total number of pages
         $pageCount = $pdf->setSourceFile($filePath);
@@ -45,15 +47,35 @@ class PDFController extends Controller
                 $pdf->Text(55, 47, $first_name);
                 $pdf->Text(55, 52, $middle_name);
                 $pdf->Text(180, 47, $suffix);
-                $pdf->Text(55, 59, $date_of_birth); //change format of Date
+                $pdf->Text(55, 59, $date_of_birth);
                 $pdf->Text(55, 66, $place_of_birth);
+
+                // Sex Checkmarks
+                $pdf->SetFont('ZapfDingbats', '', 7); 
+                if (strtolower($sex) === 'male') {
+                    $pdf->Text(55, 71.5, chr(52)); 
+                } elseif (strtolower($sex) === 'female') {
+                    $pdf->Text(79.5, 71.5, chr(52)); 
+                }
+
+                // Civil Status Checkmarks
+                $pdf->SetFont('ZapfDingbats', '', 7); 
+                if (strtolower($civil_status) === 'single') {
+                    $pdf->Text(55, 76.5, chr(52)); 
+                } elseif (strtolower($civil_status) === 'married') {
+                    $pdf->Text(79.5, 76.5, chr(52));
+                } elseif (strtolower($civil_status) === 'widowed') {
+                    $pdf->Text(55, 80, chr(52)); 
+                } elseif (strtolower($civil_status) === 'separated') {
+                    $pdf->Text(79.5, 80, chr(52)); 
+                } 
 
             }
         }
 
-        // Output for browser view instead of download
+        // Output for browser view
         return response($pdf->Output('S'))
             ->header('Content-Type', 'application/pdf')
             ->header('Content-Disposition', 'inline; filename="full_pds.pdf"');
-    }
+    } 
 }

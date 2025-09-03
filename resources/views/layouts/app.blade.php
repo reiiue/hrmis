@@ -7,6 +7,7 @@
 <body>
     <div class="container">
         @yield('content')
+        @stack('scripts')
     </div>
 </body>
 </html>

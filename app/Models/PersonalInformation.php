@@ -67,4 +67,38 @@ class PersonalInformation extends Model
         return $this->hasOne(Spouse::class);
     }
 
+    // Relationship to Children
+    public function children()
+    {
+        return $this->hasMany(Child::class);
+
+    // Relationship to Parents
+    }public function parents()
+    {
+        return $this->hasOne(ParentInfo::class);
+    }
+    
+    // Relationship to Educational Background
+    public function educationalBackgrounds()
+    {
+        return $this->hasMany(EducationalBackground::class);   
+    }
+
+        /**
+     * Relationship: A person can have many Civil Service Eligibilities
+     */
+    public function civilServiceEligibilities()
+    {
+        return $this->hasMany(CivilServiceEligibility::class);
+    }
+
+    public function workExperiences()
+    {
+        return $this->hasMany(WorkExperience::class);
+    }
+
+    public function personalInformation()
+    {
+        return $this->belongsTo(PersonalInformation::class);
+    }
 }
