@@ -14,6 +14,7 @@ use App\Models\ParentInfo; // <— import Parents model
 use App\Models\EducationalBackground;
 use App\Models\CivilServiceEligibility; // <-- add this
 use App\Models\WorkExperience; // <-- NEW
+use App\Models\MembershipAssociation; 
 
 
 class PDSController extends Controller
@@ -33,6 +34,7 @@ class PDSController extends Controller
         $educationalBackgrounds = collect(); // default empty
         $eligibilities = collect(); // <-- default empty
         $work_experiences = collect(); // <-- NEW
+        $membership_associations = collect(); // <-- NEW
 
         if ($personalInfo) {
             $residentialAddress = $personalInfo->addresses()
@@ -50,6 +52,7 @@ class PDSController extends Controller
             $educationalBackgrounds = $personalInfo->educationalBackgrounds()->get();
             $eligibilities = $personalInfo->civilServiceEligibilities()->get(); // <-- load eligibilities
             $work_experiences = $personalInfo->workExperiences()->get(); // <-- load
+            $membership_associations = $personalInfo->membershipAssociations()->get();
 
         }
 
@@ -65,6 +68,7 @@ class PDSController extends Controller
             'educationalBackgrounds',
             'eligibilities', // <-- pass to blade
             'work_experiences', // <-- pass to blade
+            'membership_associations' // <-- pass to blade
         ));
     }
 
@@ -136,6 +140,13 @@ class PDSController extends Controller
             'salary_grade_step.*' => 'nullable|string|max:50',
             'status_appointment.*' => 'nullable|string|max:255',
             'gov_service.*' => 'nullable|in:Y,N',
+
+            // Membership Associations
+            'organization_name.*' => 'nullable|string|max:255',
+            'period_from.*' => 'nullable|date',
+            'period_to.*' => 'nullable|date',
+            'number_of_hours.*' => 'nullable|integer|min:0',
+            'position.*' => 'nullable|string|max:255',
         ]);
 
         // --- Save Personal Information ---
@@ -276,7 +287,7 @@ class PDSController extends Controller
             }
         }
 
-               // --- Civil Service Eligibilities ---
+        // --- Civil Service Eligibilities ---
         CivilServiceEligibility::where('personal_information_id', $personalInformation->id)->delete();
 
         $eligibilityTypes = $request->input('eligibility_type', []);
@@ -294,7 +305,7 @@ class PDSController extends Controller
             }
         }
 
-                // --- Work Experiences ---
+        // --- Work Experiences ---
         WorkExperience::where('personal_information_id', $personalInformation->id)->delete();
 
         $fromDates = $request->input('inclusive_date_from', []);
@@ -314,6 +325,24 @@ class PDSController extends Controller
             }
         }
 
+        // --- Membership Associations ---
+        MembershipAssociation::where('personal_information_id', $personalInformation->id)->delete();
+
+        $orgNames = $request->input('organization_name', []);
+        foreach ($orgNames as $index => $org) {
+            if ($org || $request->period_from[$index] || $request->period_to[$index] || $request->position[$index]) {
+                MembershipAssociation::create([
+                    'personal_information_id' => $personalInformation->id,
+                    'organization_name' => $org ?? null,
+                    'period_from' => $request->period_from[$index] ?? null,
+                    'period_to' => $request->period_to[$index] ?? null,
+                    'number_of_hours' => $request->number_of_hours[$index] ?? null,
+                    'position' => $request->position[$index] ?? null,
+                ]);
+            }
+        }
+
+        
         
 
         return redirect()->route('pds.index')->with('success', 'Personal Information updated successfully.');

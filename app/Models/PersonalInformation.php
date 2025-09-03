@@ -97,8 +97,8 @@ class PersonalInformation extends Model
         return $this->hasMany(WorkExperience::class);
     }
 
-    public function personalInformation()
+    public function membershipAssociations()
     {
-        return $this->belongsTo(PersonalInformation::class);
+        return $this->hasMany(MembershipAssociation::class);
     }
 }

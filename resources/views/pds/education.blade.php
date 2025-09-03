@@ -10,7 +10,7 @@
             <td colspan="10" class="pds-label text-center">PERIOD OF ATTENDANCE</td>
             <td rowspan="2" colspan="5" class="pds-label text-center align-middle">HIGHEST LEVEL/ <br> UNITS EARNED <br> <small>(if not graduated)</small></td>
             <td rowspan="2" colspan="6" class="pds-label text-center align-middle">YEAR GRADUATED</td>
-            <td rowspan="2" colspan="5" class="pds-label text-center align-middle" style="font-size: 8px">SCHOLARSHIP/ <br> ACADEMIC HONORS <br> RECEIVED</td>
+            <td rowspan="2" colspan="5" class="pds-label " style="font-size: 8px">SCHOLARSHIP <br> ACADEMIC HONORS <br> RECEIVED</td>
         </tr>
         <tr>
             <td colspan="5" class="pds-label text-center">From</td>

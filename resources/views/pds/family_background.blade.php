@@ -76,7 +76,7 @@
         </table>
 
         {{-- Add Child Button --}}
-        <button type="button" class="btn btn-sm btn-primary mt-2" id="add-child">+ Add Child</button>
+        <button type="button" class="btn btn-sm btn-primary mt-2 btn-success" id="add-child">+ Add Child</button>
     </td>
 </tr>
 
@@ -198,7 +198,6 @@
     color: #fff !important;
 }
 </style>
-
 
 
 <script>

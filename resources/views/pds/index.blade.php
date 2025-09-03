@@ -36,6 +36,8 @@
             @include('pds.education')
             @include('pds.civil_service_eligibility')
             @include('pds.work_experience')
+            @include('pds.membership_associations')
+
 
         </table>
             
