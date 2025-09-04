@@ -101,4 +101,41 @@ class PersonalInformation extends Model
     {
         return $this->hasMany(MembershipAssociation::class);
     }
+
+    public function learningDevelopments()
+    {
+        return $this->hasMany(LearningDevelopment::class);
+    }
+
+    public function relationshipToAuthority()
+    {
+        return $this->hasOne(RelationshipToAuthority::class, 'personal_information_id');
+    }
+
+    public function legalCase()
+    {
+        return $this->hasOne(LegalCase::class, 'personal_information_id');
+    }
+
+    public function employmentSeparation()
+    {
+        return $this->hasOne(EmploymentSeparation::class, 'personal_information_id');
+    }
+
+    public function politicalActivity()
+    {
+        return $this->hasOne(PoliticalActivity::class, 'personal_information_id');
+    }
+
+    public function immigrationStatus()
+    {
+        return $this->hasOne(ImmigrationStatus::class);
+    }
+
+    public function specialStatus()
+    {
+        return $this->hasOne(SpecialStatus::class);
+    }
+
+
 }

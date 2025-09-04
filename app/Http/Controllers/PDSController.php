@@ -15,6 +15,14 @@ use App\Models\EducationalBackground;
 use App\Models\CivilServiceEligibility; // <-- add this
 use App\Models\WorkExperience; // <-- NEW
 use App\Models\MembershipAssociation; 
+use App\Models\LearningDevelopment; // <-- NEW
+use App\Models\RelationshipToAuthority;
+use App\Models\LegalCase;
+use App\Models\EmploymentSeparation; // <-- add this import at the top
+use App\Models\PoliticalActivity; // <-- add this import at the top
+use App\Models\ImmigrationStatus;
+use App\Models\SpecialStatus;
+
 
 
 class PDSController extends Controller
@@ -35,6 +43,12 @@ class PDSController extends Controller
         $eligibilities = collect(); // <-- default empty
         $work_experiences = collect(); // <-- NEW
         $membership_associations = collect(); // <-- NEW
+        $learning_developments = collect(); // <-- NEW
+        $relationshipToAuthority = null;
+        $employmentSeparation = null;
+        $legalCase = null;
+        $politicalActivity = null;
+        $specialStatus = null;
 
         if ($personalInfo) {
             $residentialAddress = $personalInfo->addresses()
@@ -53,6 +67,13 @@ class PDSController extends Controller
             $eligibilities = $personalInfo->civilServiceEligibilities()->get(); // <-- load eligibilities
             $work_experiences = $personalInfo->workExperiences()->get(); // <-- load
             $membership_associations = $personalInfo->membershipAssociations()->get();
+            $learning_developments = $personalInfo->learningDevelopments()->get(); // <-- load
+            $relationshipToAuthority = $personalInfo->relationshipToAuthority()->first();
+            $legalCase = $personalInfo->legalCase()->first();
+            $employmentSeparation = $personalInfo->employmentSeparation()->first(); // <-- load this
+            $politicalActivity = $personalInfo->politicalActivity()->first();
+            $specialStatus = $personalInfo->specialStatus()->first(); // load special status
+
 
         }
 
@@ -68,9 +89,17 @@ class PDSController extends Controller
             'educationalBackgrounds',
             'eligibilities', // <-- pass to blade
             'work_experiences', // <-- pass to blade
-            'membership_associations' // <-- pass to blade
+            'membership_associations', // <-- pass to blade
+            'learning_developments', // <-- pass to blade
+            'relationshipToAuthority',
+            'legalCase',
+            'employmentSeparation', // <-- pass to blade
+            'politicalActivity', // <-- pass to blade
+            'specialStatus'
         ));
     }
+
+
 
     public function update(Request $request)
     {
@@ -147,6 +176,51 @@ class PDSController extends Controller
             'period_to.*' => 'nullable|date',
             'number_of_hours.*' => 'nullable|integer|min:0',
             'position.*' => 'nullable|string|max:255',
+
+            // Learning & Development
+            'training_title.*' => 'nullable|string|max:255',
+            'inclusive_date_from.*' => 'nullable|date',
+            'inclusive_date_to.*' => 'nullable|date',
+            'number_of_hours.*' => 'nullable|integer|min:0',
+            'type_of_id.*' => 'nullable|string|max:255',
+            'conducted_by.*' => 'nullable|string|max:255',
+
+            // Relationship To Authority
+            'within_third_degree' => 'nullable|in:yes,no',
+            'within_fourth_degree' => 'nullable|in:yes,no',
+            'details' => 'nullable|string',
+
+            // Legal Cases
+            'has_admin_offense'   => 'nullable|in:yes,no',
+            'offense_details'     => 'nullable|string',
+            'has_criminal_case'    => 'nullable|in:yes,no',
+            'date_filed'          => 'nullable|date',
+            'status_of_case'      => 'nullable|string|max:255',
+            'has_been_convicted'  => 'nullable|in:yes,no',
+            'conviction_details'  => 'nullable|string',
+
+            // Employment Separation
+            'has_been_separated' => 'nullable|in:yes,no',
+            'details' => 'nullable|string',
+
+            //Political Activities
+            'has_been_candidate' => 'nullable|in:yes,no',
+            'election_details' => 'nullable|string',
+            'has_resigned_for_campaigning' => 'nullable|in:yes,no',
+            'campaign_details' => 'nullable|string',
+
+            // Immigration Status
+            'has_immigrant_status' => 'nullable|in:yes,no',
+            'country_id' => 'nullable|exists:countries,id',
+            
+            // Special Status
+            'is_indigenous_member'  => 'nullable|in:yes,no',
+            'indigenous_group_name' => 'nullable|string',
+            'is_person_with_disability' => 'nullable|in:yes,no',
+            'pwd_id_number' => 'nullable|integer',
+            'is_solo_parent' => 'nullable|in:yes,no',
+            'solo_parent_id_number' => 'nullable|integer',
+
         ]);
 
         // --- Save Personal Information ---
@@ -288,62 +362,239 @@ class PDSController extends Controller
         }
 
         // --- Civil Service Eligibilities ---
-        CivilServiceEligibility::where('personal_information_id', $personalInformation->id)->delete();
+        $eligibilityIdsFromForm = $request->input('eligibility_id', []); // ✅ matches Blade
+        $eligibilityTypes       = $request->input('eligibility_type', []);
 
-        $eligibilityTypes = $request->input('eligibility_type', []);
+        $processedIds = [];
+
         foreach ($eligibilityTypes as $index => $type) {
-            if ($type || $request->rating[$index] || $request->exam_date[$index]) {
-                CivilServiceEligibility::create([
-                    'personal_information_id' => $personalInformation->id,
-                    'eligibility_type' => $type ?? null,
-                    'rating' => $request->rating[$index] ?? null,
-                    'exam_date' => $request->exam_date[$index] ?? null,
-                    'exam_place' => $request->exam_place[$index] ?? null,
-                    'license_number' => $request->license_number[$index] ?? null,
-                    'license_validity' => $request->license_validity[$index] ?? null,
-                ]);
+            $eligibilityId   = $eligibilityIdsFromForm[$index] ?? null;
+            $rating          = $request->rating[$index] ?? null;
+            $examDate        = $request->exam_date[$index] ?? null;
+            $examPlace       = $request->exam_place[$index] ?? null;
+            $licenseNumber   = $request->license_number[$index] ?? null;
+            $licenseValidity = $request->license_validity[$index] ?? null;
+
+            // ✅ Only process if eligibility_type has a value
+            if ($type) {
+                $eligibility = CivilServiceEligibility::updateOrCreate(
+                    ['id' => $eligibilityId, 'personal_information_id' => $personalInformation->id],
+                    [
+                        'eligibility_type'  => $type,
+                        'rating'            => $rating,
+                        'exam_date'         => $examDate,
+                        'exam_place'        => $examPlace,
+                        'license_number'    => $licenseNumber,
+                        'license_validity'  => $licenseValidity,
+                    ]
+                );
+
+                $processedIds[] = $eligibility->id;
             }
         }
 
-        // --- Work Experiences ---
-        WorkExperience::where('personal_information_id', $personalInformation->id)->delete();
+        // ✅ Delete removed rows
+        CivilServiceEligibility::where('personal_information_id', $personalInformation->id)
+            ->whereNotIn('id', $processedIds)
+            ->delete();
 
-        $fromDates = $request->input('inclusive_date_from', []);
-        foreach ($fromDates as $index => $from) {
-            if ($from || $request->inclusive_date_to[$index] || $request->position_title[$index]) {
-                WorkExperience::create([
-                    'personal_information_id' => $personalInformation->id,
-                    'inclusive_date_from' => $from ?? null,
-                    'inclusive_date_to' => $request->inclusive_date_to[$index] ?? null,
-                    'position_title' => $request->position_title[$index] ?? null,
-                    'department_agency' => $request->department_agency[$index] ?? null,
-                    'monthly_salary' => $request->monthly_salary[$index] ?? null,
-                    'salary_grade_step' => $request->salary_grade_step[$index] ?? null,
-                    'status_appointment' => $request->status_appointment[$index] ?? null,
-                    'gov_service' => $request->gov_service[$index] ?? null,
-                ]);
-            }
-        }
+
+
+
 
         // --- Membership Associations ---
-        MembershipAssociation::where('personal_information_id', $personalInformation->id)->delete();
+        $assocIdsFromForm = $request->input('membership_association_id', []); // hidden input
+        $orgNames         = $request->input('organization_name', []);
 
-        $orgNames = $request->input('organization_name', []);
+        $processedIds = [];
+
         foreach ($orgNames as $index => $org) {
-            if ($org || $request->period_from[$index] || $request->period_to[$index] || $request->position[$index]) {
-                MembershipAssociation::create([
-                    'personal_information_id' => $personalInformation->id,
-                    'organization_name' => $org ?? null,
-                    'period_from' => $request->period_from[$index] ?? null,
-                    'period_to' => $request->period_to[$index] ?? null,
-                    'number_of_hours' => $request->number_of_hours[$index] ?? null,
-                    'position' => $request->position[$index] ?? null,
-                ]);
+            $assocId       = $assocIdsFromForm[$index] ?? null;
+            $periodFrom    = $request->period_from[$index] ?? null;
+            $periodTo      = $request->period_to[$index] ?? null;
+            $numHours      = $request->number_of_hours[$index] ?? null;
+            $position      = $request->position[$index] ?? null;
+
+            // ✅ Only process if organization_name has a value
+            if ($org) {
+                $assoc = MembershipAssociation::updateOrCreate(
+                    ['id' => $assocId, 'personal_information_id' => $personalInformation->id],
+                    [
+                        'organization_name' => $org,
+                        'period_from'       => $periodFrom,
+                        'period_to'         => $periodTo,
+                        'number_of_hours'   => $numHours,
+                        'position'          => $position,
+                    ]
+                );
+
+                $processedIds[] = $assoc->id;
             }
         }
 
-        
-        
+        // ✅ Delete removed rows
+        MembershipAssociation::where('personal_information_id', $personalInformation->id)
+            ->whereNotIn('id', $processedIds)
+            ->delete();
+
+
+
+        // --- Work Experiences ---
+        $workIdsFromForm = $request->input('work_experience_id', []); // hidden input from form
+        $workFromDates   = $request->input('inclusive_date_from', []);
+
+        $processedIds = [];
+
+        foreach ($workFromDates as $index => $from) {
+            $workId            = $workIdsFromForm[$index] ?? null;
+            $to                = $request->inclusive_date_to[$index] ?? null;
+            $positionTitle     = $request->position_title[$index] ?? null;
+            $departmentAgency  = $request->department_agency[$index] ?? null;
+            $monthlySalary     = $request->monthly_salary[$index] ?? null;
+            $salaryGradeStep   = $request->salary_grade_step[$index] ?? null;
+            $statusAppointment = $request->status_appointment[$index] ?? null;
+            $govService        = $request->gov_service[$index] ?? null;
+
+            // ✅ Only save/update if position_title has a value
+            if ($positionTitle) {
+                $workExperience = WorkExperience::updateOrCreate(
+                    ['id' => $workId, 'personal_information_id' => $personalInformation->id],
+                    [
+                        'inclusive_date_from' => $from,
+                        'inclusive_date_to'   => $to,
+                        'position_title'      => $positionTitle,
+                        'department_agency'   => $departmentAgency,
+                        'monthly_salary'      => $monthlySalary,
+                        'salary_grade_step'   => $salaryGradeStep,
+                        'status_appointment'  => $statusAppointment,
+                        'gov_service'         => $govService,
+                    ]
+                );
+
+                $processedIds[] = $workExperience->id;
+            }
+        }
+
+
+        // ✅ Delete rows removed from the form
+        WorkExperience::where('personal_information_id', $personalInformation->id)
+            ->whereNotIn('id', $processedIds)
+            ->delete();
+
+        // --- Learning & Development ---
+        $ldIdsFromForm   = $request->input('learning_development_id', []); // hidden input
+        $trainingTitles  = $request->input('training_title', []);
+
+        $processedIds = [];
+
+        foreach ($trainingTitles as $index => $title) {
+            $ldId           = $ldIdsFromForm[$index] ?? null;
+            $from           = $request->inclusive_date_from[$index] ?? null;
+            $to             = $request->inclusive_date_to[$index] ?? null;
+            $numHours       = $request->number_of_hours[$index] ?? null;
+            $typeOfLd       = $request->type_of_id[$index] ?? null;   // ⚠️ check if this should be type_of_ld
+            $conductedBy    = $request->conducted_by[$index] ?? null;
+
+            // ✅ Only process if training_title has a value
+            if ($title) {
+                $ld = LearningDevelopment::updateOrCreate(
+                    ['id' => $ldId, 'personal_information_id' => $personalInformation->id],
+                    [
+                        'training_title'       => $title,
+                        'inclusive_date_from'  => $from,
+                        'inclusive_date_to'    => $to,
+                        'number_of_hours'      => $numHours,
+                        'type_of_id'           => $typeOfLd,  // ⚠️ change column name if needed
+                        'conducted_by'         => $conductedBy,
+                    ]
+                );
+
+                $processedIds[] = $ld->id;
+            }
+        }
+
+        // ✅ Delete removed rows
+        LearningDevelopment::where('personal_information_id', $personalInformation->id)
+            ->whereNotIn('id', $processedIds)
+            ->delete();
+
+
+        // --- Relationship To Authority ---
+        RelationshipToAuthority::updateOrCreate(
+            ['personal_information_id' => $personalInformation->id],
+            [
+                'within_third_degree'  => $request->input('within_third_degree') ?? null,
+                'within_fourth_degree' => $request->input('within_fourth_degree') ?? null,
+                'details'              => $request->input('details') ?? null,
+            ]
+        );
+
+        // --- Legal Cases ---
+        LegalCase::updateOrCreate(
+            ['personal_information_id' => $personalInformation->id],
+            [
+                'has_admin_offense'   => $request->input('has_admin_offense') ?? 'no',
+                'offense_details'     => $request->input('offense_details') ?? null,
+                'has_criminal_case'   => $request->input('has_criminal_case') ?? 'no',
+                'date_filed'          => $request->input('date_filed') ?? null,
+                'status_of_case'      => $request->input('status_of_case') ?? null,
+                'has_been_convicted'  => $request->input('has_been_convicted') ?? 'no',
+                'conviction_details'  => $request->input('conviction_details') ?? null,
+            ]
+        );
+
+        // --- Employment Separation ---
+        EmploymentSeparation::updateOrCreate(
+            ['personal_information_id' => $personalInformation->id],
+            [
+                'has_been_separated' => $request->input('has_been_separated') ?? 'no',
+                'details'            => $request->input('details') ?? null,
+            ]
+        );
+
+        PoliticalActivity::updateOrCreate(
+            ['personal_information_id' => $personalInformation->id],
+            [
+                'has_been_candidate' => $request->input('has_been_candidate') ?? 'no',
+                'election_details' => $request->input('election_details') ?? null,
+                'has_resigned_for_campaigning' => $request->input('has_resigned_for_campaigning') ?? 'no',
+                'campaign_details' => $request->input('campaign_details') ?? null,
+            ]
+        );
+
+        // --- Immigration Status ---
+        $hasImmigrantStatus = $request->input('has_immigrant_status');
+        $countryId = $request->input('country_id');
+
+        if ($hasImmigrantStatus) {
+            ImmigrationStatus::updateOrCreate(
+                ['personal_information_id' => $personalInformation->id],
+                [
+                    'has_immigrant_status' => $hasImmigrantStatus,
+                    'country_id' => $hasImmigrantStatus === 'yes' ? $countryId : null,
+                ]
+            );
+        } else {
+            // Optional: delete if not answered
+            ImmigrationStatus::where('personal_information_id', $personalInformation->id)->delete();
+        }
+
+        // --- Special Status ---
+        SpecialStatus::updateOrCreate(
+            ['personal_information_id' => $personalInformation->id],
+            [
+                'is_indigenous_member'      => $request->input('is_indigenous_member') ?? 'no',
+                'indigenous_group_name'     => $request->input('is_indigenous_member') === 'yes' ? $request->input('indigenous_group_name') : null,
+                'is_person_with_disability' => $request->input('is_person_with_disability') ?? 'no',
+                'pwd_id_number'             => $request->input('is_person_with_disability') === 'yes' ? $request->input('pwd_id_number') : null,
+                'is_solo_parent'            => $request->input('is_solo_parent') ?? 'no',
+                'solo_parent_id_number'     => $request->input('is_solo_parent') === 'yes' ? $request->input('solo_parent_id_number') : null,
+            ]
+        );
+
+
+
+    
 
         return redirect()->route('pds.index')->with('success', 'Personal Information updated successfully.');
     }

@@ -1,4 +1,5 @@
 <!-- resources/views/pds/civil_service_eligibility.blade.php -->
+
 <tr>
     <td colspan="62" class="pds-section-header">IV. CIVIL SERVICE ELIGIBILITY</td>
 </tr>
@@ -28,14 +29,17 @@
 
 {{-- Dynamic Rows --}}
 <tbody id="eligibilityTable">
-    @foreach($eligibilities ?? [] as $index => $eligibility)
+    @foreach($eligibilities ?? [] as $eligibility)
     <tr>
+        {{-- Hidden ID field to keep existing record reference --}}
+        <input type="hidden" name="eligibility_id[]" value="{{ $eligibility->id }}">
+
         {{-- Eligibility Type --}}
         <td colspan="20">
             <input type="text" 
                    name="eligibility_type[]" 
                    class="form-control pds-input-borderless"
-                   value="{{ old('eligibility_type.' . $index, $eligibility->eligibility_type) }}">
+                   value="{{ old('eligibility_type.' . $eligibility->id, $eligibility->eligibility_type) }}">
         </td>
 
         {{-- Rating --}}
@@ -43,7 +47,7 @@
             <input type="text" 
                    name="rating[]" 
                    class="form-control pds-input-borderless"
-                   value="{{ old('rating.' . $index, $eligibility->rating) }}">
+                   value="{{ old('rating.' . $eligibility->id, $eligibility->rating) }}">
         </td>
 
         {{-- Date of Examination --}}
@@ -51,7 +55,7 @@
             <input type="date" 
                    name="exam_date[]" 
                    class="form-control pds-input-borderless"
-                   value="{{ old('exam_date.' . $index, $eligibility->exam_date) }}">
+                   value="{{ old('exam_date.' . $eligibility->id, $eligibility->exam_date) }}">
         </td>
 
         {{-- Place of Examination --}}
@@ -59,7 +63,7 @@
             <input type="text" 
                    name="exam_place[]" 
                    class="form-control pds-input-borderless"
-                   value="{{ old('exam_place.' . $index, $eligibility->exam_place) }}">
+                   value="{{ old('exam_place.' . $eligibility->id, $eligibility->exam_place) }}">
         </td>
 
         {{-- License Number --}}
@@ -67,7 +71,7 @@
             <input type="text" 
                    name="license_number[]" 
                    class="form-control pds-input-borderless"
-                   value="{{ old('license_number.' . $index, $eligibility->license_number) }}">
+                   value="{{ old('license_number.' . $eligibility->id, $eligibility->license_number) }}">
         </td>
 
         {{-- Date of Validity --}}
@@ -75,7 +79,7 @@
             <input type="date" 
                    name="license_validity[]" 
                    class="form-control pds-input-borderless"
-                   value="{{ old('license_validity.' . $index, $eligibility->license_validity) }}">
+                   value="{{ old('license_validity.' . $eligibility->id, $eligibility->license_validity) }}">
         </td>
     </tr>
     @endforeach
@@ -95,6 +99,7 @@
         let table = document.getElementById('eligibilityTable');
         let newRow = `
         <tr>
+            <input type="hidden" name="eligibility_id[]" value="">
             <td colspan="20"><input type="text" name="eligibility_type[]" class="form-control pds-input-borderless"></td>
             <td colspan="5"><input type="text" name="rating[]" class="form-control pds-input-borderless"></td>
             <td colspan="8"><input type="date" name="exam_date[]" class="form-control pds-input-borderless"></td>
