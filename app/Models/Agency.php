@@ -5,31 +5,26 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Spouse extends Model
+class Agency extends Model
 {
     use HasFactory;
 
     protected $fillable = [
+        'type',
         'personal_information_id',
-        'first_name',
-        'last_name',
-        'middle_name',
-        'name_extension',
-        'occupation',
-        'position',
-        'employer_business_name',
-        'business_address',
-        'telephone_no',
+        'spouse_id',
+        'name',
+        'address',
     ];
 
+    // Relations
     public function personalInformation()
     {
         return $this->belongsTo(PersonalInformation::class);
     }
 
-        public function agencies()
+    public function spouse()
     {
-        return $this->hasOne(Agency::class);
+        return $this->belongsTo(Spouse::class);
     }
 }
-

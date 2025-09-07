@@ -32,6 +32,7 @@ class PersonalInformation extends Model
         'telephone_no',
         'mobile_no',
         'agency_employee_no',
+        'filing_type'
     ];
 
     /**
@@ -135,6 +136,11 @@ class PersonalInformation extends Model
     public function specialStatus()
     {
         return $this->hasOne(SpecialStatus::class);
+    }
+
+        public function agencies()
+    {
+        return $this->hasOne(Agency::class);
     }
 
 

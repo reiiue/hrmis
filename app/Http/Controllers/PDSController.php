@@ -161,8 +161,8 @@ class PDSController extends Controller
             'license_validity.*' => 'nullable|date',
 
             // Work Experience
-            'inclusive_date_from.*' => 'nullable|date',
-            'inclusive_date_to.*' => 'nullable|date',
+            'inclusive_date_from_work.*' => 'nullable|date',
+            'inclusive_date_to_work.*' => 'nullable|date',
             'position_title.*' => 'nullable|string|max:255',
             'department_agency.*' => 'nullable|string|max:255',
             'monthly_salary.*' => 'nullable|numeric|min:0',
@@ -178,6 +178,7 @@ class PDSController extends Controller
             'position.*' => 'nullable|string|max:255',
 
             // Learning & Development
+
             'training_title.*' => 'nullable|string|max:255',
             'inclusive_date_from.*' => 'nullable|date',
             'inclusive_date_to.*' => 'nullable|date',
@@ -441,13 +442,13 @@ class PDSController extends Controller
 
         // --- Work Experiences ---
         $workIdsFromForm = $request->input('work_experience_id', []); // hidden input from form
-        $workFromDates   = $request->input('inclusive_date_from', []);
+        $workFromDates   = $request->input('inclusive_date_from_work', []);
 
         $processedIds = [];
 
         foreach ($workFromDates as $index => $from) {
             $workId            = $workIdsFromForm[$index] ?? null;
-            $to                = $request->inclusive_date_to[$index] ?? null;
+            $to                = $request->inclusive_date_to_work[$index] ?? null;
             $positionTitle     = $request->position_title[$index] ?? null;
             $departmentAgency  = $request->department_agency[$index] ?? null;
             $monthlySalary     = $request->monthly_salary[$index] ?? null;
@@ -460,8 +461,8 @@ class PDSController extends Controller
                 $workExperience = WorkExperience::updateOrCreate(
                     ['id' => $workId, 'personal_information_id' => $personalInformation->id],
                     [
-                        'inclusive_date_from' => $from,
-                        'inclusive_date_to'   => $to,
+                        'inclusive_date_from_work' => $from,
+                        'inclusive_date_to_work'   => $to,
                         'position_title'      => $positionTitle,
                         'department_agency'   => $departmentAgency,
                         'monthly_salary'      => $monthlySalary,

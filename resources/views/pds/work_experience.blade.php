@@ -60,17 +60,17 @@
         {{-- Inclusive Dates From --}}
         <td colspan="6">
             <input type="date" 
-                name="inclusive_date_from[]" 
+                name="inclusive_date_from_work[]" 
                 class="form-control pds-input-borderless"
-                value="{{ old('inclusive_date_from.' . $work->id, $work->inclusive_date_from) }}">
+                value="{{ old('inclusive_date_from_work.' . ($work->id ?? ''), $work->inclusive_date_from_work ?? '') }}">
         </td>
 
         {{-- Inclusive Dates To --}}
         <td colspan="6">
             <input type="date" 
-                name="inclusive_date_to[]" 
+                name="inclusive_date_to_work[]" 
                 class="form-control pds-input-borderless"
-                value="{{ old('inclusive_date_to.' . $work->id, $work->inclusive_date_to) }}">
+                value="{{ old('inclusive_date_to_work.' . $work->id, $work->inclusive_date_to_work) }}">
         </td>
 
         {{-- Position Title --}}
@@ -139,8 +139,8 @@
         let newRow = `
         <tr>
             <input type="hidden" name="work_experience_id[]" value="">
-            <td colspan="6"><input type="date" name="inclusive_date_from[]" class="form-control pds-input-borderless"></td>
-            <td colspan="6"><input type="date" name="inclusive_date_to[]" class="form-control pds-input-borderless"></td>
+            <td colspan="6"><input type="date" name="inclusive_date_from_work[]" class="form-control pds-input-borderless"></td>
+            <td colspan="6"><input type="date" name="inclusive_date_to_work[]" class="form-control pds-input-borderless"></td>
             <td colspan="14"><input type="text" name="position_title[]" class="form-control pds-input-borderless"></td>
             <td colspan="14"><input type="text" name="department_agency[]" class="form-control pds-input-borderless"></td>
             <td colspan="7"><input type="number" name="monthly_salary[]" class="form-control pds-input-borderless"></td>

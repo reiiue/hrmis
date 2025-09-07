@@ -1,0 +1,104 @@
+/* === Paper effect container === */
+.saln-container {
+    width: 1000px;              /* Legal paper width */
+    min-height: 1056px;         /* Legal paper height */
+    margin-left: 250px;         /* Matches sidebar offset */
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 50px;
+    font-family: 'Arial', sans-serif;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* soft paper shadow */
+}
+
+.double-line {
+    border-top: 2px solid #000;     /* Top line */
+    border-bottom: 2px solid #000;  /* Bottom line */
+    height: 5px;                    /* Small gap between lines */
+    margin: 15px 0;                 /* Space above and below */
+}
+
+/* Keep table balanced */
+.saln-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* ensures equal column widths */
+}
+
+.saln-table td {
+    vertical-align: top;
+    padding: 3px 0px;
+    border: none;
+}
+
+/* Force labels same width */
+.saln-table .fw-bold {
+    display: inline-block;
+    width: 100px; /* adjust for alignment */
+    font-weight: bold;
+    font-size: 13px;
+    text-transform: uppercase;
+}
+
+/* Input line styling */
+.saln-line {
+    display: inline-block;
+    border: none;
+    border-bottom: 1px solid #000;
+    font-size: 14px;
+    padding: 0 4px;
+    margin-bottom: 2px;
+    background: transparent;
+    vertical-align: bottom;
+    text-align: center;
+}
+
+/* Focus state: full blue border + glow */
+.saln-line:focus {
+  color: #212529;
+  background-color: #fff;
+  border-color: #86b7fe;
+  outline: 0;
+  box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.25);
+  border-radius: 6px; /* Add curved edges */
+}
+
+/* Width helpers */
+.name-input { width: 102px; }
+.address-input { width: 84px; }
+.small { width: 30px; text-align: center; }
+.wide { width: calc(100% - 107px); }
+
+/* Sub-labels under inputs */
+.sub-labels {
+    margin-top: -2px;
+    font-size: 11px;
+    font-style: italic;
+    display: flex;
+    gap: 50px; /* spacing between sublabels */
+}
+.sub-labels span {
+    white-space: nowrap;
+}
+
+/* each input + label stack neatly */
+.name-block {
+    display: inline-block;
+    text-align: center;
+    margin-right: 8px;
+    vertical-align: top;
+}
+
+.name-block .saln-line {
+    display: block;
+    margin: 0 auto;
+}
+
+.sub-label {
+    display: block;
+    font-size: 11px;
+    font-style: italic;
+    margin-top: -2px;
+    text-align: center;
+    white-space: nowrap;
+}
+

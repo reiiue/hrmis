@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('name_extension')->nullable(); // e.g. Jr, Sr, III
             
             $table->string('occupation')->nullable();
+            $table->string(column: 'position')->nullable();
             $table->string('employer_business_name')->nullable();
             $table->string('business_address')->nullable();
             $table->string('telephone_no')->nullable();
