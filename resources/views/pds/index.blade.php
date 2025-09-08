@@ -29,19 +29,40 @@
     <form method="POST" action="{{ route('pds.update') }}">
         @csrf
 
-        <table class="table pds-table">
  
-            @include('pds.personal_information')
-            @include('pds.family_background')
-            @include('pds.education')
-            @include('pds.civil_service_eligibility')
-            @include('pds.work_experience')
-            @include('pds.membership_associations')
-            @include('pds.learning_development')
-            @include('pds.last_page')
+            <table class="pds-table section-table">
+                @include('pds.personal_information')
+            </table>
+
+            <table class="pds-table section-table">
+                @include('pds.family_background')
+            </table>
+
+            <table class="pds-table section-table">
+                @include('pds.education')
+            </table>
+
+            <table class="pds-table section-table">
+                @include('pds.civil_service_eligibility')
+            </table>
+
+            <table class="pds-table section-table">
+                @include('pds.work_experience')
+            </table>
+
+            <table class="pds-table section-table">
+                @include('pds.membership_associations')
+            </table>
+
+            <table class="pds-table section-table">
+                @include('pds.learning_development')
+            </table>
+            
+            <table class="pds-table section-table">
+                @include('pds.last_page')
+            </table>
 
 
-        </table>
             
         <div class="text-end mt-3">
             <button type="submit" class="btn btn-primary">Save</button>

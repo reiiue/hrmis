@@ -8,6 +8,15 @@
     font-family: 'Arial', sans-serif;
 }
 
+table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.hidden-section {
+    display: none;
+}
+
 .section-title {
     font-weight: bold;
     font-size: 16px;
@@ -29,10 +38,26 @@
     
 }
 
+.section-table {
+    margin-bottom: 30px; /* space between sections */
+    width: 100%;
+    border-collapse: collapse; /* keeps table layout normal */
+}
+
 .pds-section-header {
     font-weight: bold;
     font-size: 15px;
     background-color: #f0f0f0;
+    position: relative;
+}
+
+.pds-section-toggle-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    line-height: 1;
 }
 
 .pds-label {
@@ -42,7 +67,6 @@
     font-size: 11px;
     vertical-align: middle;
 }
-
 
 
 .pds-input-borderless {
@@ -75,22 +99,44 @@
 }
 
 .address-input:focus {
-    outline: none;
-    box-shadow: none;
-    border-bottom: 1px solid #00acf0;
+    outline: 0;
+    border: 1.5px solid #86b7fe;
+    border-radius: 4px;
+    box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.25);
+    background-color: #fff;
+}
+
+/* Optional: Remove conflicting border styles on focus */
+.address-input:focus {
+    border-bottom: 1.5px solid #86b7fe;
+    border-left: 1.5px solid #86b7fe;
+    border-top: 1.5px solid #86b7fe;
+    border-right: 1.5px solid #86b7fe;
 }
 
 .address-label {
-    font-size: 13px;
-    margin-top: 2px;
+    font-size: 10px;
+    margin-top: 1px;
     text-align: center;
     font-weight: bold;
 }
 
-table {
-    table-layout: fixed;
-    width: 100%;
+.remove-child {
+    background-color: #dc3545 !important; /* red */
+    border: 1px solid #dc3545 !important;
+    color: #fff !important;              /* white X */
 }
+
+/* Disable Bootstrap hover/active states */
+.remove-child:hover,
+.remove-child:focus,
+.remove-child:active {
+    background-color: #dc3545 !important; /* keep same red */
+    border-color: #dc3545 !important;
+    color: #fff !important;
+}
+
+
 
 
 

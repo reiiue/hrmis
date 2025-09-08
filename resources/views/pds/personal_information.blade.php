@@ -144,7 +144,7 @@
         <div class="address-label"><em>House/Block/Lot No.</em></div>
     </td>
     <td colspan="11">
-        <input type="text" name="address[residential][street]" class="address-input"
+        <input type="text" name="address[residential][street]" class="address-input "
             value="{{ old('address.residential.street', $residentialAddress->street ?? '') }}">
         <div class="address-label"><em>Street</em></div>
     </td>
