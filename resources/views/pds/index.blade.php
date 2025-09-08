@@ -12,7 +12,7 @@
         <a href="#">Home</a>
         <a href="#">Profile</a>
         <a href="{{ route('pds.index') }}" class="active">PDS</a>
-        <a href="#">SALN</a>
+         <a href="{{ route('saln.index') }}">SALN</a>
         <form method="POST" action="{{ route('logout') }}">
             @csrf
             <button type="submit" class="btn btn-link logout">
@@ -57,7 +57,7 @@
             <table class="pds-table section-table">
                 @include('pds.learning_development')
             </table>
-            
+
             <table class="pds-table section-table">
                 @include('pds.last_page')
             </table>

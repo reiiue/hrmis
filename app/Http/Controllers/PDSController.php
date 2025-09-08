@@ -348,19 +348,35 @@ class PDSController extends Controller
 
 
 
-        // --- Children ---
-        Child::where('personal_information_id', $personalInformation->id)->delete();
-        if ($request->has('children')) {
-            foreach ($request->children as $childData) {
-                if (!empty($childData['full_name']) || !empty($childData['date_of_birth'])) {
-                    Child::create([
-                        'personal_information_id' => $personalInformation->id,
-                        'full_name' => $childData['full_name'] ?? null,
-                        'date_of_birth' => $childData['date_of_birth'] ?? null,
-                    ]);
-                }
+        $children = $request->input('children', []); // gets array of children
+        $processedChildIds = [];
+
+        foreach ($children as $childData) {
+            // Skip empty rows
+            if (empty($childData['full_name']) && empty($childData['date_of_birth'])) {
+                continue;
             }
+
+            $child = Child::updateOrCreate(
+                [
+                    'id' => $childData['id'] ?? null, // use existing ID if exists
+                    'personal_information_id' => $personalInformation->id,
+                ],
+                [
+                    'full_name' => $childData['full_name'] ?? null,
+                    'date_of_birth' => $childData['date_of_birth'] ?? null,
+                ]
+            );
+
+            $processedChildIds[] = $child->id;
         }
+
+        // Delete removed children
+        Child::where('personal_information_id', $personalInformation->id)
+            ->whereNotIn('id', $processedChildIds)
+            ->delete();
+
+
 
         // --- Civil Service Eligibilities ---
         $eligibilityIdsFromForm = $request->input('eligibility_id', []); // ✅ matches Blade

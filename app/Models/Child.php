@@ -15,7 +15,7 @@ class Child extends Model
         'personal_information_id',
         'full_name',
         'date_of_birth',
-        'age',
+        'is_living_with_declarant'
     ];
 
     public function personalInformation()

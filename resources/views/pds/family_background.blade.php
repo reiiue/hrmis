@@ -44,6 +44,8 @@
                 @forelse($children as $index => $child)
                     <tr>
                         <td colspan="9">
+                            <input type="hidden" name="children[{{ $index }}][id]"
+                                value="{{ $child->id }}">
                             <input type="text" name="children[{{ $index }}][full_name]"
                                 class="form-control pds-input-borderless"
                                 placeholder="Child's Full Name"
@@ -59,7 +61,6 @@
                         </td>
                     </tr>
                 @empty
-                    {{-- Default empty row --}}
                     <tr>
                         <td colspan="9">
                             <input type="text" name="children[0][full_name]"
@@ -80,6 +81,8 @@
             <button type="button" class="btn btn-sm btn-success mt-2" id="add-child">+ Add Child</button>
         </td>
     </tr>
+
+    {{-- Spouse Middle Name --}}
     <tr>
         <td colspan="7" class="pds-label">MIDDLE NAME</td>
         <td colspan="23">
@@ -88,6 +91,8 @@
                 value="{{ old('spouse_middle_name', $spouse->middle_name ?? '') }}">
         </td>
     </tr>
+
+    {{-- Spouse Occupation --}}
     <tr>
         <td colspan="7" class="pds-label">OCCUPATION</td>
         <td colspan="23">
@@ -96,6 +101,8 @@
                 value="{{ old('spouse_occupation', $spouse->occupation ?? '') }}">
         </td>
     </tr>
+
+    {{-- Employer / Business Name --}}
     <tr>
         <td colspan="7" class="pds-label">EMPLOYER / BUSINESS NAME</td>
         <td colspan="23">
@@ -104,6 +111,8 @@
                 value="{{ old('employer_business_name', $spouse->employer_business_name ?? '') }}">
         </td>
     </tr>
+
+    {{-- Business Address --}}
     <tr>
         <td colspan="7" class="pds-label">BUSINESS ADDRESS</td>
         <td colspan="23">
@@ -112,6 +121,8 @@
                 value="{{ old('business_address', $spouse->business_address ?? '') }}">
         </td>
     </tr>
+
+    {{-- Father's Surname --}}
     <tr>
         <td colspan="7" class="pds-label">FATHER'S SURNAME</td>
         <td colspan="23">
@@ -120,6 +131,8 @@
                 value="{{ old('father_last_name', $parents->father_last_name ?? '') }}">
         </td>
     </tr>
+
+    {{-- Father's First Name / Extension --}}
     <tr>
         <td colspan="7" class="pds-label">FIRST NAME</td>
         <td colspan="14">
@@ -134,6 +147,8 @@
                 value="{{ old('father_extension_name', $parents->father_extension_name ?? '') }}">
         </td>
     </tr>
+
+    {{-- Father's Middle Name --}}
     <tr>
         <td colspan="7" class="pds-label">MIDDLE NAME</td>
         <td colspan="23">
@@ -142,9 +157,13 @@
                 value="{{ old('father_middle_name', $parents->father_middle_name ?? '') }}">
         </td>
     </tr>
+
+    {{-- Mother's Maiden Name Header --}}
     <tr>
         <td colspan="30" class="pds-label">MOTHER'S MAIDEN NAME</td>
     </tr>
+
+    {{-- Mother's Surname --}}
     <tr>
         <td colspan="7" class="pds-label">SURNAME</td>
         <td colspan="23">
@@ -153,6 +172,8 @@
                 value="{{ old('mother_last_name', $parents->mother_last_name ?? '') }}">
         </td>
     </tr>
+
+    {{-- Mother's First Name --}}
     <tr>
         <td colspan="7" class="pds-label">FIRST NAME</td>
         <td colspan="23">
@@ -161,6 +182,8 @@
                 value="{{ old('mother_first_name', $parents->mother_first_name ?? '') }}">
         </td>
     </tr>
+
+    {{-- Mother's Middle Name --}}
     <tr>
         <td colspan="7" class="pds-label">MIDDLE NAME</td>
         <td colspan="23">
@@ -171,8 +194,6 @@
     </tr>
 </tbody>
 
-
-
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const toggleBtn = document.getElementById('toggle-family-bg');
@@ -181,9 +202,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const addChildBtn = document.getElementById('add-child');
     const childrenTable = document.getElementById('children-table');
 
-    // Restore open/closed state from localStorage
-    let state = localStorage.getItem('family_section_open');
-    if (state === 'open') {
+    // Restore open/closed state
+    if (localStorage.getItem('family_section_open') === 'open') {
         sectionBody.classList.remove('hidden-section');
         icon.textContent = '−';
     }
@@ -202,7 +222,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Add Child Row
     addChildBtn.addEventListener('click', function () {
-        const index = childrenTable.rows.length; // dynamic index
+        const index = childrenTable.querySelectorAll('tr').length; // dynamic index
         const newRow = document.createElement('tr');
         newRow.innerHTML = `
             <td colspan="9">

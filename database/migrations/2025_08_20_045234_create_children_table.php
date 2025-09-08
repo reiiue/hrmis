@@ -15,7 +15,7 @@ return new class extends Migration
                   ->onDelete('cascade'); // delete children if personal_info is deleted
             $table->string('full_name');
             $table->date('date_of_birth')->nullable();
-            $table->integer('age')->nullable();
+            $table->boolean('is_living_with_declarant')->default(false); // ✅ new column
             $table->timestamps();
         });
     }
