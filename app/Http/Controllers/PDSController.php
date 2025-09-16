@@ -183,7 +183,7 @@ class PDSController extends Controller
             'inclusive_date_from.*' => 'nullable|date',
             'inclusive_date_to.*' => 'nullable|date',
             'number_of_hours.*' => 'nullable|integer|min:0',
-            'type_of_id.*' => 'nullable|string|max:255',
+            'type_of_ld.*' => 'nullable|string|max:255',
             'conducted_by.*' => 'nullable|string|max:255',
 
             // Relationship To Authority
@@ -509,7 +509,7 @@ class PDSController extends Controller
             $from           = $request->inclusive_date_from[$index] ?? null;
             $to             = $request->inclusive_date_to[$index] ?? null;
             $numHours       = $request->number_of_hours[$index] ?? null;
-            $typeOfLd       = $request->type_of_id[$index] ?? null;   // ⚠️ check if this should be type_of_ld
+            $typeOfLd       = $request->type_of_ld[$index] ?? null;   // ⚠️ check if this should be type_of_ld
             $conductedBy    = $request->conducted_by[$index] ?? null;
 
             // ✅ Only process if training_title has a value
@@ -521,7 +521,7 @@ class PDSController extends Controller
                         'inclusive_date_from'  => $from,
                         'inclusive_date_to'    => $to,
                         'number_of_hours'      => $numHours,
-                        'type_of_id'           => $typeOfLd,  // ⚠️ change column name if needed
+                        'type_of_ld'           => $typeOfLd,  // ⚠️ change column name if needed
                         'conducted_by'         => $conductedBy,
                     ]
                 );

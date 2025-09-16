@@ -1,49 +1,45 @@
-{{-- resources/views/saln/index.blade.php --}}
-
 @extends('layouts.app')
 
 @section('content')
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 <link href="{{ asset('css/dashboard.css') }}" rel="stylesheet">
 <link href="{{ asset('css/saln.css') }}" rel="stylesheet"> 
+<link href="{{ asset('css/sidebar.css') }}" rel="stylesheet">
 
-<div class="wrapper">
+<div class="dashboard-container">
     <!-- Sidebar -->
-    <div class="sidebar">
-        <h4 class="text-center text-primary mb-4">HRMIS</h4>
-        <a href="#">Home</a>
-        <a href="#">Profile</a>
-        <a href="{{ route('pds.index') }}">PDS</a>
-        <a href="{{ route('saln.index') }}" class="active">SALN</a>
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit" class="btn btn-link logout">
-                Logout
-            </button>
-        </form>
-    </div>
+    @include('partials.sidebar')
 
-    <!-- Main Content -->
-    <div class="saln-container bg-white shadow-sm">
+    <!-- SALN Main Content -->
+    <main class="saln-main-content">
+        <div class="saln-container">
+            <h4 class="text-center mb-4" style="font-family: 'Times New Roman', Times, serif; font-weight: bold;">
+                SWORN STATEMENT OF ASSETS, LIABILITIES AND NET WORTH
+            </h4>
 
-        <h4 class="text-center" style="font-family: 'Times New Roman', Times, serif; font-weight: Bold; ">SWORN STATEMENT OF ASSETS, LIABILITIES AND NET WORTH</h4>
+            <form method="POST" action="{{ route('saln.update') }}">
+                @csrf
+                
+                <table class="table personal-information-table">
+                    @include('saln.personal_information')
+                </table>
+                <table class="table personal-information-table">
+                    @include('saln.children')
+                </table>
 
-        <form method="POST" action="{{ route('saln.update') }}">
-            @csrf
 
-        <table class="table saln-table">
-            @include('saln.personal_information')
-            @include('saln.children')
-            
-
-        </table>
+                @include('saln.real_properties')
+                @include('saln.personal_properties')
 
                 
-            <div class="text-end mt-3">
-                <button type="submit" class="btn btn-primary">Save</button>
-                <a href="{{ route('saln.pdf') }}" target="_blank" class="btn btn-success">Download PDF</a>
-            </div>
-        </form>
-    </div>
+
+                <div class="text-end mt-3">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <a href="{{ route('saln.pdf') }}" target="_blank" class="btn btn-success">Download PDF</a>
+                </div>
+            </form>
+        </div>
+    </main>
 </div>
 @endsection

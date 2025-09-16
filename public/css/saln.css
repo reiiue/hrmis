@@ -1,45 +1,69 @@
-/* === Paper effect container === */
+/* === Paper Effect Container === */
 .saln-container {
     width: 1000px;              /* Legal paper width */
     min-height: 1056px;         /* Legal paper height */
-    margin-left: 250px;         /* Matches sidebar offset */
+    margin-left: 280px;         /* Matches sidebar offset */
     background: #fff;
     border: 1px solid #ccc;
     padding: 50px;
     font-family: 'Arial', sans-serif;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* soft paper shadow */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Soft paper shadow */
 }
 
+/* === Divider Lines === */
 .double-line {
-    border-top: 2px solid #000;     /* Top line */
-    border-bottom: 2px solid #000;  /* Bottom line */
-    height: 5px;                    /* Small gap between lines */
-    margin: 15px 0;                 /* Space above and below */
+    border-top: 2px solid #000;
+    border-bottom: 2px solid #000;
+    height: 5px;
+    margin: 15px 0;
 }
 
-/* Keep table balanced */
-.saln-table {
+/* === Personal Information Table === */
+.personal-information-table {
     width: 100%;
     border-collapse: collapse;
-    table-layout: fixed; /* ensures equal column widths */
+    table-layout: fixed;
 }
 
-.saln-table td {
+.personal-information-table td {
     vertical-align: top;
-    padding: 3px 0px;
+    padding: 3px 0;
     border: none;
 }
 
-/* Force labels same width */
-.saln-table .fw-bold {
+.personal-information-table .fw-bold {
     display: inline-block;
-    width: 100px; /* adjust for alignment */
+    width: 100px;   /* Adjust for alignment */
     font-weight: bold;
     font-size: 13px;
     text-transform: uppercase;
 }
 
-/* Input line styling */
+/* === General SALN Tables === */
+.saln-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.saln-table td,
+.saln-table th {
+    border: 1px solid #000;
+    vertical-align: middle;
+    padding: 4px;
+    font-size: 12px;
+}
+
+.saln-table .saln-section-header {
+    background: #f5f5f5;
+    font-weight: bold;
+    font-size: 14px;
+    text-align: left;
+    border: 1px solid #000;
+}
+
+
+/* === Input Line Styling === */
 .saln-line {
     display: inline-block;
     border: none;
@@ -52,47 +76,43 @@
     text-align: center;
 }
 
-/* Focus state: full blue border + glow */
 .saln-line:focus {
-  color: #212529;
-  background-color: #fff;
-  border-color: #86b7fe;
-  outline: 0;
-  box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.25);
-  border-radius: 6px; /* Add curved edges */
+    color: #212529;
+    background-color: #fff;
+    border-color: #86b7fe;
+    outline: 0;
+    box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.25);
+    border-radius: 6px;
 }
 
-/* Width helpers */
-.name-input { width: 102px; }
-.address-input { width: 84px; }
+/* Width Helpers */
+.name-input { width: 130px; }
+.address-input { width: 103px; }
 .small { width: 30px; text-align: center; }
 .wide { width: calc(100% - 107px); }
 
-/* Sub-labels under inputs */
+/* === Labels & Sub-labels === */
 .sub-labels {
     margin-top: -2px;
     font-size: 11px;
     font-style: italic;
     display: flex;
-    gap: 50px; /* spacing between sublabels */
+    gap: 50px;
 }
 .sub-labels span {
     white-space: nowrap;
 }
 
-/* each input + label stack neatly */
 .name-block {
     display: inline-block;
     text-align: center;
     margin-right: 8px;
     vertical-align: top;
 }
-
 .name-block .saln-line {
     display: block;
     margin: 0 auto;
 }
-
 .sub-label {
     display: block;
     font-size: 11px;
@@ -103,26 +123,27 @@
 }
 
 .saln-section-label {
-    white-space: nowrap;
+    font-family: 'Times New Roman', serif;
     font-weight: bold;
     text-align: center;
+    white-space: nowrap;
 }
 
 /* === SALN Children Section === */
 .children-table {
     width: 100%;
+    margin-top: 5px;
     font-size: 13px;
     border-collapse: collapse;
     text-align: center;
-    margin-top: 5px;
-    table-layout: fixed; /* ensures width rules are respected */
+    table-layout: fixed;
 }
 
 /* Column widths */
-.children-table td:nth-child(1) { width: 40%; } /* Name */
-.children-table td:nth-child(2) { width: 30%; } /* Date of Birth */
-.children-table td:nth-child(3) { width: 15%; } /* Age */
-.children-table td:nth-child(4) { width: 15%; } /* Living with */
+.children-table td:nth-child(1) { width: 40%; }
+.children-table td:nth-child(2) { width: 30%; }
+.children-table td:nth-child(3) { width: 15%; }
+.children-table td:nth-child(4) { width: 15%; }
 
 .children-table thead td {
     font-weight: bold;
@@ -143,17 +164,104 @@
 }
 
 .children-table input[type="checkbox"] {
-    transform: scale(1.5); /* make checkbox a bit bigger */
+    transform: scale(1.5);
     cursor: pointer;
-}
-
-.saln-spacer {
-    height: 10px;
-    border: none;
 }
 
 .children-table input[type="date"] {
     vertical-align: middle;
     line-height: normal;
     height: 30px;
+}
+
+/* Spacer Row */
+.saln-spacer {
+    height: 10px;
+    border: none;
+}
+
+/* === Section Headers & Toggles === */
+.saln-section-header {
+    font-weight: bold;
+    font-size: 15px;
+    background-color: #f5f5f5;
+    position: relative;
+}
+
+.saln-section-toggle-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    line-height: 1;
+}
+
+/* === Labels inside tables === */
+.saln-label {
+    background-color: #e8e8e8 !important;
+    font-weight: bold;
+    padding: 6px 8px;
+    font-size: 11px;
+    vertical-align: middle;
+}
+
+.saln-input-borderless {
+    width: 100%;
+    height: 28px;
+    font-size: 14px;
+    border: none;
+    outline: none;
+    padding: 2px 4px;
+    background-color: transparent;
+}
+
+/* Subsection Headers */
+.saln-subsection-header {
+    font-weight: bold;
+    font-size: 16px;
+    text-align: left;
+    padding: 6px 0;
+}
+.saln-subsection-header span {
+    margin-left: 40px;
+    display: inline-block;
+}
+
+/* Remove borders for label-only rows */
+.saln-table .saln-section-header,
+.saln-table .saln-subsection-header {
+    border: none !important;
+    background: none;
+}
+
+/* === Section Titles & Notes === */
+.saln-section-title {
+    font-family: 'Times New Roman', serif;
+    font-weight: bold;
+    font-size: 19px;
+    text-align: center;
+    color: black;
+    border-bottom: 1px solid #000;
+    width: 41%;
+    margin: 1px auto;
+}
+
+.saln-note {
+    font-size: 15px;
+    font-style: italic;
+    text-align: center;
+    color: #333;
+}
+
+#real-properties-body textarea.form-control {
+    width: 100%;
+    resize: none;       /* prevent manual resize */
+    overflow: hidden;   /* hide scrollbars */
+    min-height: 10px;   /* small base height */
+    box-sizing: border-box;
+}
+
+textarea {
+    resize: none !important;
 }

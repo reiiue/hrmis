@@ -28,6 +28,7 @@ class PDFController extends Controller
         $sex         = $personalInfo?->sex ?? '';
         $civil_status = $personalInfo?->civil_status ?? '';
         $height = $personalInfo?->height ?? '';
+        $weight = $personalInfo?->weight ?? '';
 
         // Get total number of pages
         $pageCount = $pdf->setSourceFile($filePath);
@@ -51,8 +52,9 @@ class PDFController extends Controller
                 $pdf->Text(55, 59, $date_of_birth);
                 $pdf->Text(55, 66, $place_of_birth);
                 $pdf->Text(55, 89.5, $height);
+                $pdf->Text(55, 95, $weight);
 
-                // Sex Checkmarks
+                // Sex Checkmarksx
                 $pdf->SetFont('ZapfDingbats', '', 7); 
                 if (strtolower($sex) === 'male') {
                     $pdf->Text(55, 71.5, chr(52)); 

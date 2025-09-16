@@ -63,7 +63,7 @@
 
         {{-- Buttons under the table --}}
         <div class="text-center mt-2">
-            <button type="button" id="addChildBtn" class="btn btn-sm btn-primary">+ Add Child</button>
+            <button type="button" id="addChildBtn" class="btn btn-sm btn-success">+ Add Child</button>
             <button type="button" id="removeChildBtn" class="btn btn-sm btn-danger">- Remove Child</button>
         </div>
     </td>

@@ -143,5 +143,18 @@ class PersonalInformation extends Model
         return $this->hasOne(Agency::class);
     }
 
+        public function assetsRealProperties()
+    {
+        return $this->hasMany(AssetsRealProperty::class, 'personal_information_id');
+    }
 
-}
+        public function assetsPersonalProperties()
+    {
+        return $this->hasMany(AssetsPersonalProperty::class);
+    }
+
+    public function totalCosts()
+    {
+        return $this->hasMany(TotalCosts::class, 'personal_information_id');
+    }
+    }

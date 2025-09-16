@@ -17,6 +17,7 @@ return new class extends Migration {
             $table->string('barangay')->nullable();
             $table->string('city')->nullable();
             $table->string('province')->nullable();
+            $table->string('zip_code')->nullable();
             $table->timestamps();
         });
     }
