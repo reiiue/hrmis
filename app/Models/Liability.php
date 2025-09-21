@@ -5,24 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class AssetsRealProperty extends Model
+class Liability extends Model
 {
     use HasFactory;
 
-    protected $table = 'assets_real_properties';
+    protected $table = 'liabilities';
 
     protected $fillable = [
         'personal_information_id',
-        'description',
-        'kind',
-        'location',
-        'assessed_value',
-        'current_fair_market_value',
-        'acquisition_year',
-        'acquisition_mode',
-        'acquisition_cost',
-        'subtotal',
-        'reporting_year', // ✅ Add this
+        'nature_type',
+        'name_of_creditors',
+        'outstanding_balance',
+        'reporting_year',
     ];
 
     protected static function boot()

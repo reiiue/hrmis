@@ -23,6 +23,7 @@ return new class extends Migration
             $table->year('acquisition_year')->nullable();
             $table->string('acquisition_mode')->nullable();
             $table->decimal('acquisition_cost', 15, 2)->nullable();
+            $table->year('reporting_year'); // Reporting year for SALN
 
             $table->timestamps();
 

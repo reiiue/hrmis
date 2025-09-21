@@ -157,4 +157,20 @@ class PersonalInformation extends Model
     {
         return $this->hasMany(TotalCosts::class, 'personal_information_id');
     }
+
+    public function liabilities()
+    {
+        return $this->hasMany(Liability::class);
+    }
+
+    public function businessInterests()
+    {
+        return $this->hasMany(BusinessInterest::class);
+    }
+
+    public function relativesInGovService()
+    {
+        return $this->hasMany(RelativeInGovService::class);
+    }
+    
     }

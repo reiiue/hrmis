@@ -20,17 +20,20 @@
 
             <form method="POST" action="{{ route('saln.update') }}">
                 @csrf
-                
+
                 <table class="table personal-information-table">
                     @include('saln.personal_information')
-                </table>
-                <table class="table personal-information-table">
                     @include('saln.children')
                 </table>
 
-
                 @include('saln.real_properties')
                 @include('saln.personal_properties')
+                @include('saln.liabilities')
+                @include('saln.business_interests')
+                @include('saln.relatives_in_gov_service')
+
+                {{-- Save and Download Buttons --}}
+            
 
                 
 

@@ -54,7 +54,7 @@
         </tr>
 
         {{-- Dynamic Rows --}}
-        @php $realOld = old('description_real', []); @endphp
+        @php $realOld = old('description', []); @endphp
 
         @if($realOld)
             @foreach($realOld as $i => $oldDesc)
@@ -72,7 +72,7 @@
                     <td colspan="7"><textarea name="acquisition_cost[]" class="form-control saln-input-borderless auto-resize number-input" required>{{ old("acquisition_cost.$i") }}</textarea></td>
                 </tr>
             @endforeach
-        @elseif(isset($real_properties))
+        @elseif(isset($real_properties) && $real_properties->count())
             @foreach($real_properties as $real)
                 <tr>
                     <td style="display:none;">
@@ -88,25 +88,36 @@
                     <td colspan="7"><textarea name="acquisition_cost[]" class="form-control saln-input-borderless auto-resize number-input">{{ $real->acquisition_cost }}</textarea></td>
                 </tr>
             @endforeach
+        @else
+            {{-- Default empty row --}}
+            <tr>
+                <td style="display:none;">
+                    <input type="hidden" name="real_property_id[]" value="">
+                </td>
+                <td colspan="10"><textarea name="description[]" class="form-control saln-input-borderless auto-resize" required></textarea></td>
+                <td colspan="10"><textarea name="kind[]" class="form-control saln-input-borderless auto-resize" required></textarea></td>
+                <td colspan="12"><textarea name="location[]" class="form-control saln-input-borderless auto-resize" required></textarea></td>
+                <td colspan="7"><textarea name="assessed_value[]" class="form-control saln-input-borderless auto-resize number-input" required></textarea></td>
+                <td colspan="7"><textarea name="current_fair_market_value[]" class="form-control saln-input-borderless auto-resize number-input" required></textarea></td>
+                <td colspan="6"><textarea name="acquisition_year[]" class="form-control saln-input-borderless auto-resize" required></textarea></td>
+                <td colspan="6"><textarea name="acquisition_mode[]" class="form-control saln-input-borderless auto-resize" required></textarea></td>
+                <td colspan="7"><textarea name="acquisition_cost[]" class="form-control saln-input-borderless auto-resize number-input" required></textarea></td>
+            </tr>
         @endif
     </tbody>
 </table>
 
-{{-- Subtotal + Buttons in one row --}}
+{{-- Subtotal + Buttons --}}
 <div class="d-flex justify-content-between align-items-center me-4 mb-4">
-    {{-- Buttons on the left --}}
     <div>
         <button type="button" class="btn btn-sm btn-success me-2" id="addRealBtn">+ Add</button>
         <button type="button" class="btn btn-sm btn-danger" id="removeRealBtn">- Remove</button>
     </div>
-
-    {{-- Subtotal on the right --}}
     <strong>Subtotal: ₱<span id="acquisitionCostSubtotal">0.00</span></strong>
 </div>
 
-
-{{-- Hidden subtotal field --}}
-<input type="hidden" name="acquisition_cost_subtotal" id="acquisition_cost_subtotal">
+{{-- 🔽 Hidden subtotal field (renamed to match personal properties script) --}}
+<input type="hidden" name="real_acquisition_cost_subtotal" id="real_acquisition_cost_subtotal">
 
 {{-- Scripts --}}
 <script>
@@ -133,7 +144,14 @@ function calculateAcquisitionSubtotal() {
     });
     document.getElementById('acquisitionCostSubtotal').textContent =
         subtotal.toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    document.getElementById('acquisition_cost_subtotal').value = subtotal;
+
+    // 🔽 store in the renamed hidden field
+    document.getElementById('real_acquisition_cost_subtotal').value = subtotal;
+
+    // 🔽 update total assets if available
+    if (typeof calculateTotalAssets === "function") {
+        calculateTotalAssets();
+    }
 }
 
 // Input handler
@@ -163,26 +181,28 @@ document.querySelector("form").addEventListener("submit", () => {
 // Add/Remove rows
 const body = document.getElementById("real-properties-body");
 
+const realRowTemplate = `
+<tr>
+    <td style="display:none;"><input type="hidden" name="real_property_id[]" value=""></td>
+    <td colspan="10"><textarea name="description[]" class="form-control saln-input-borderless auto-resize" required></textarea></td>
+    <td colspan="10"><textarea name="kind[]" class="form-control saln-input-borderless auto-resize" required></textarea></td>
+    <td colspan="12"><textarea name="location[]" class="form-control saln-input-borderless auto-resize" required></textarea></td>
+    <td colspan="7"><textarea name="assessed_value[]" class="form-control saln-input-borderless auto-resize number-input" required></textarea></td>
+    <td colspan="7"><textarea name="current_fair_market_value[]" class="form-control saln-input-borderless auto-resize number-input" required></textarea></td>
+    <td colspan="6"><textarea name="acquisition_year[]" class="form-control saln-input-borderless auto-resize" required></textarea></td>
+    <td colspan="6"><textarea name="acquisition_mode[]" class="form-control saln-input-borderless auto-resize" required></textarea></td>
+    <td colspan="7"><textarea name="acquisition_cost[]" class="form-control saln-input-borderless auto-resize number-input" required></textarea></td>
+</tr>
+`;
+
 document.getElementById("addRealBtn").addEventListener("click", () => {
-    body.insertAdjacentHTML("beforeend", `
-        <tr>
-            <td style="display:none;"><input type="hidden" name="real_property_id[]" value=""></td>
-            <td colspan="10"><textarea name="description[]" class="form-control saln-input-borderless auto-resize" required></textarea></td>
-            <td colspan="10"><textarea name="kind[]" class="form-control saln-input-borderless auto-resize" required></textarea></td>
-            <td colspan="12"><textarea name="location[]" class="form-control saln-input-borderless auto-resize" required></textarea></td>
-            <td colspan="7"><textarea name="assessed_value[]" class="form-control saln-input-borderless auto-resize number-input" required></textarea></td>
-            <td colspan="7"><textarea name="current_fair_market_value[]" class="form-control saln-input-borderless auto-resize number-input" required></textarea></td>
-            <td colspan="6"><textarea name="acquisition_year[]" class="form-control saln-input-borderless auto-resize" required></textarea></td>
-            <td colspan="6"><textarea name="acquisition_mode[]" class="form-control saln-input-borderless auto-resize" required></textarea></td>
-            <td colspan="7"><textarea name="acquisition_cost[]" class="form-control saln-input-borderless auto-resize number-input" required></textarea></td>
-        </tr>
-    `);
+    body.insertAdjacentHTML("beforeend", realRowTemplate);
     calculateAcquisitionSubtotal();
 });
 
 document.getElementById("removeRealBtn").addEventListener("click", () => {
-    if (body.rows.length > 2) {
-        body.deleteRow(body.rows.length - 1);
+    if (body.querySelectorAll("tr").length > 1) {
+        body.removeChild(body.lastElementChild);
         calculateAcquisitionSubtotal();
     }
 });
