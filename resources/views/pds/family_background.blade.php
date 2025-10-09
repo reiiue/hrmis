@@ -39,7 +39,7 @@
                 value="{{ old('spouse_name_extension', $spouse->name_extension ?? '') }}">
         </td>
         {{-- Children Section --}}
-        <td colspan="32" rowspan="12">
+        <td colspan="32" rowspan="13">
             <table class="table table-borderless mb-0" id="children-table">
                 @forelse($children as $index => $child)
                     <tr>
@@ -119,6 +119,16 @@
             <input type="text" name="business_address"
                 class="form-control pds-input-borderless"
                 value="{{ old('business_address', $spouse->business_address ?? '') }}">
+        </td>
+    </tr>
+    
+    {{-- Spouse Telephone Number --}}
+    <tr>
+        <td colspan="7" class="pds-label">TELEPHONE NO.</td>
+        <td colspan="23">
+            <input type="text" name="spouse_telephone_no"
+                class="form-control pds-input-borderless"
+                value="{{ old('spouse_telephone_no', $spouse->telephone_no ?? '') }}">
         </td>
     </tr>
 

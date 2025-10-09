@@ -56,6 +56,16 @@ class PersonalInformation extends Model
         return $this->hasMany(Address::class);
     }
 
+    public function permanentAddress()
+    {
+        return $this->hasOne(Address::class)->where('address_type', 'permanent');
+    }
+
+    public function residentialAddress()
+    {
+        return $this->hasOne(Address::class)->where('address_type', 'residential');
+    }
+
         // Relationship to Government IDs
     public function governmentIds()
     {
@@ -106,6 +116,11 @@ class PersonalInformation extends Model
     public function learningDevelopments()
     {
         return $this->hasMany(LearningDevelopment::class);
+    }
+
+    public function specialSkillsHobbies()
+    {
+        return $this->hasMany(SpecialSkillsHobby::class, 'personal_information_id');
     }
 
     public function relationshipToAuthority()
@@ -168,9 +183,11 @@ class PersonalInformation extends Model
         return $this->hasMany(BusinessInterest::class);
     }
 
-    public function relativesInGovService()
+        public function relativesInGovService()
     {
         return $this->hasMany(RelativeInGovService::class);
     }
+
+    
     
     }

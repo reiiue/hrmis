@@ -19,8 +19,8 @@ class WorkExperience extends Model
         'salary_grade_step',
         'status_appointment',
         'gov_service',
-        'inclusive_date_from',
-        'inclusive_date_to',
+        'inclusive_date_from_work',
+        'inclusive_date_to_work',
     ];
 
     /**

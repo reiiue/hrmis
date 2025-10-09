@@ -231,37 +231,37 @@
             <input type="text" 
                 name="graduate_degree" 
                 class="form-control pds-input-borderless"
-                value="{{ old('graduate_degree', optional($educationalBackgrounds->where('level', 'Graduate Studies')->first())->degree_course) }}">
+                value="{{ old('graduate_degree', optional($educationalBackgrounds->where('level', 'GraduateStudies')->first())->degree_course) }}">
         </td>
         <td colspan="5">
             <input type="number" 
                 name="graduate_period_from" 
                 class="form-control pds-input-borderless"
-                value="{{ old('graduate_period_from', optional($educationalBackgrounds->where('level', 'Graduate Studies')->first())->period_from) }}">
+                value="{{ old('graduate_period_from', optional($educationalBackgrounds->where('level', 'GraduateStudies')->first())->period_from) }}">
         </td>
         <td colspan="5">
             <input type="number" 
                 name="graduate_period_to" 
                 class="form-control pds-input-borderless"
-                value="{{ old('graduate_period_to', optional($educationalBackgrounds->where('level', 'Graduate Studies')->first())->period_to) }}">
+                value="{{ old('graduate_period_to', optional($educationalBackgrounds->where('level', 'GraduateStudies')->first())->period_to) }}">
         </td>
         <td colspan="5">
             <input type="text" 
                 name="graduate_highest_level" 
                 class="form-control pds-input-borderless"
-                value="{{ old('graduate_highest_level', optional($educationalBackgrounds->where('level', 'Graduate Studies')->first())->highest_level_unit_earned) }}">
+                value="{{ old('graduate_highest_level', optional($educationalBackgrounds->where('level', 'GraduateStudies')->first())->highest_level_unit_earned) }}">
         </td>
         <td colspan="6">
             <input type="number" 
                 name="graduate_year_graduated" 
                 class="form-control pds-input-borderless"
-                value="{{ old('graduate_year_graduated', optional($educationalBackgrounds->where('level', 'Graduate Studies')->first())->year_graduated) }}">
+                value="{{ old('graduate_year_graduated', optional($educationalBackgrounds->where('level', 'GraduateStudies')->first())->year_graduated) }}">
         </td>
         <td colspan="5">
             <input type="text" 
                 name="graduate_honors" 
                 class="form-control pds-input-borderless"
-                value="{{ old('graduate_honors', optional($educationalBackgrounds->where('level', 'Graduate Studies')->first())->scholarship_honors) }}">
+                value="{{ old('graduate_honors', optional($educationalBackgrounds->where('level', 'GraduateStudies')->first())->scholarship_honors) }}">
         </td>
     </tr>
     <input type="hidden" name="graduate_level" value="GraduateStudies">

@@ -51,6 +51,10 @@
             </table>
 
             <table class="pds-table section-table">
+                @include('pds.special_skills_hobbies')
+            </table>
+
+            <table class="pds-table section-table">
                 @include('pds.last_page')
             </table>
 

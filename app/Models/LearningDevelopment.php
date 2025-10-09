@@ -17,7 +17,7 @@ class LearningDevelopment extends Model
         'inclusive_date_from',
         'inclusive_date_to',
         'number_of_hours',
-        'type_of_id',
+        'type_of_ld',
         'conducted_by',
     ];
 

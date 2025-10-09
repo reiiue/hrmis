@@ -22,6 +22,8 @@ use App\Models\EmploymentSeparation; // <-- add this import at the top
 use App\Models\PoliticalActivity; // <-- add this import at the top
 use App\Models\ImmigrationStatus;
 use App\Models\SpecialStatus;
+use App\Models\SpecialSkillsHobby;
+
 
 
 
@@ -73,6 +75,9 @@ class PDSController extends Controller
             $employmentSeparation = $personalInfo->employmentSeparation()->first(); // <-- load this
             $politicalActivity = $personalInfo->politicalActivity()->first();
             $specialStatus = $personalInfo->specialStatus()->first(); // load special status
+            $special_skills_hobbies = $personalInfo?->specialSkillsHobbies ?? collect();
+
+
 
 
         }
@@ -95,7 +100,8 @@ class PDSController extends Controller
             'legalCase',
             'employmentSeparation', // <-- pass to blade
             'politicalActivity', // <-- pass to blade
-            'specialStatus'
+            'specialStatus',
+            'special_skills_hobbies'
         ));
     }
 
@@ -131,7 +137,7 @@ class PDSController extends Controller
             'pagibig_id' => 'nullable|string|max:50',
             'philhealth_id' => 'nullable|string|max:50',
             'sss_id' => 'nullable|string|max:50',
-            'tin_no' => 'nullable|string|max:20',
+            'tin_' => 'nullable|string|max:20',
 
             // Spouse
             'spouse_last_name' => 'nullable|string|max:255',
@@ -283,7 +289,7 @@ class PDSController extends Controller
                 'pagibig_id' => $request->input('pagibig_id') ?? null,
                 'philhealth_id' => $request->input('philhealth_id') ?? null,
                 'sss_id' => $request->input('sss_id') ?? null,
-                'tin_no' => $request->input('tin_no') ?? null,
+                'tin_id' => $request->input('tin_id') ?? null,
             ]
         );
 
@@ -534,6 +540,41 @@ class PDSController extends Controller
         LearningDevelopment::where('personal_information_id', $personalInformation->id)
             ->whereNotIn('id', $processedIds)
             ->delete();
+
+        // --- Special Skills / Hobbies / Non-Academic Distinctions / Membership in Organization ---
+        $skillIdsFromForm   = $request->input('special_skills_hobby_id', []); // hidden inputs
+        $specialSkills      = $request->input('special_skills', []);
+        $nonAcademic        = $request->input('non_academic_distinctions', []);
+        $membershipOrg      = $request->input('membership_in_organization', []);
+
+        $processedIds = [];
+
+        foreach ($specialSkills as $index => $skill) {
+            $skillId            = $skillIdsFromForm[$index] ?? null;
+            $specialSkill       = $specialSkills[$index] ?? null;
+            $nonAcademicDist    = $nonAcademic[$index] ?? null;
+            $membership         = $membershipOrg[$index] ?? null;
+
+            // ✅ Only process rows that have at least one value
+            if ($specialSkill || $nonAcademicDist || $membership) {
+                $record = SpecialSkillsHobby::updateOrCreate(
+                    ['id' => $skillId, 'personal_information_id' => $personalInformation->id],
+                    [
+                        'special_skills'            => $specialSkill,
+                        'non_academic_distinctions' => $nonAcademicDist,
+                        'membership_in_organization'=> $membership,
+                    ]
+                );
+
+                $processedIds[] = $record->id;
+            }
+        }
+
+        // ✅ Delete removed rows
+        SpecialSkillsHobby::where('personal_information_id', $personalInformation->id)
+            ->whereNotIn('id', $processedIds)
+            ->delete();
+
 
 
         // --- Relationship To Authority ---
