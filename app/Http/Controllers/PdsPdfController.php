@@ -311,16 +311,16 @@ class PdsPdfController extends Controller
                         $elig = $eligibilities[$i];
 
                         // Centered text between column boundaries
-                        $this->centerText($pdf, $y, $elig->eligibility_type ?? '', 10, 70); // Eligibility type
-                        $this->centerText($pdf, $y, $elig->rating ?? '', 71, 90);           // Rating
+                        $this->centerText($pdf, $y, $elig->eligibility_type ?? '', 25, 75); // Eligibility type
+                        $this->centerText($pdf, $y, $elig->rating ?? '', 78, 95);           // Rating
                         $this->centerText($pdf, $y, $elig->exam_date
                             ? Carbon::parse($elig->exam_date)->format('m/d/Y')
-                            : '', 91, 110);                                                // Date of exam
-                        $this->centerText($pdf, $y, $elig->exam_place ?? '', 111, 150);     // Place of exam
-                        $this->centerText($pdf, $y, $elig->license_number ?? '', 151, 175); // License number
+                            : '', 97, 115);                                                // Date of exam
+                        $this->centerText($pdf, $y, $elig->exam_place ?? '', 116, 170);     // Place of exam
+                        $this->centerText($pdf, $y, $elig->license_number ?? '', 170, 180); // License number
                         $this->centerText($pdf, $y, $elig->license_validity
                             ? Carbon::parse($elig->license_validity)->format('m/d/Y')
-                            : '', 176, 200);                                               // Validity date
+                            : '', 185, 193);                                               // Validity date
                     }
                 }
             }
@@ -352,11 +352,11 @@ class PdsPdfController extends Controller
                         $this->centerText($pdf, $y, $dateFrom, 24, 40);                     // From
                         $this->centerText($pdf, $y, $dateTo, 41, 50);                       // To
                         $this->centerText($pdf, $y, $work->position_title ?? '', 60, 90);   // Position title
-                        $this->centerText($pdf, $y, $work->department_agency ?? '', 91, 140); // Department/Agency
+                        $this->centerText($pdf, $y, $work->department_agency ?? '', 96, 140); // Department/Agency
                         $this->centerText($pdf, $y, number_format($work->monthly_salary ?? 0, 2), 141, 155); // Monthly salary
                         $this->centerText($pdf, $y, $work->salary_grade_step ?? '', 156, 165); // Salary grade/step
                         $this->centerText($pdf, $y, $work->status_appointment ?? '', 166, 185); // Status of appointment
-                        $this->centerText($pdf, $y, $work->gov_service ?? '', 186, 195);      // Gov’t service (Y/N)
+                        $this->centerText($pdf, $y, $work->gov_service ?? '', 183, 195);      // Gov’t service (Y/N)
                     }
                 }
             }
@@ -366,7 +366,7 @@ class PdsPdfController extends Controller
 
             if ($pageNo === 3) { // Assuming Membership appears on page 3 (adjust if needed)
                 $pdf->SetFont('Arial', '', 7);
-                $yStart = 25; // starting Y position for Membership section (adjust to fit your PDF)
+                $yStart = 30; // starting Y position for Membership section (adjust to fit your PDF)
                 $rowHeight = 6;
                 $maxRows = 10; // adjust based on available space in your layout
 
@@ -385,11 +385,11 @@ class PdsPdfController extends Controller
                             : '';
 
                         // Draw text centered within your defined column coordinates
-                        $this->centerText($pdf, $y, $member->organization_name ?? '', 10, 90); // Name of Organization
-                        $this->centerText($pdf, $y, $periodFrom, 91, 110);                    // From
-                        $this->centerText($pdf, $y, $periodTo, 111, 130);                     // To
-                        $this->centerText($pdf, $y, $member->number_of_hours ?? '', 131, 145); // Number of hours
-                        $this->centerText($pdf, $y, $member->position ?? '', 146, 190);       // Position
+                        $this->centerText($pdf, $y, $member->organization_name ?? '', 28, 90); // Name of Organization
+                        $this->centerText($pdf, $y, $periodFrom, 100, 110);                    // From
+                        $this->centerText($pdf, $y, $periodTo, 107, 130);                     // To
+                        $this->centerText($pdf, $y, $member->number_of_hours ?? '', 118, 145); // Number of hours
+                        $this->centerText($pdf, $y, $member->position ?? '', 145, 190);       // Position
                     }
                 }
             }
@@ -399,7 +399,7 @@ class PdsPdfController extends Controller
 
             if ($pageNo === 3) { // Assuming Learning and Development appears on Page 3
                 $pdf->SetFont('Arial', '', 7);
-                $yStart = 100; // starting Y position (adjust based on your PDF layout)
+                $yStart = 94; // starting Y position (adjust based on your PDF layout)
                 $rowHeight = 6;
                 $maxRows = 10; // adjust according to available table rows on the PDF
 
@@ -418,12 +418,12 @@ class PdsPdfController extends Controller
                             : '';
 
                         // Fill in text using centerText helper — adjust X coordinates to match your PDF columns
-                        $this->centerText($pdf, $y, $training->training_title ?? '', 10, 90);    // Title of Learning and Development
-                        $this->centerText($pdf, $y, $from, 91, 110);                             // Inclusive Dates (From)
-                        $this->centerText($pdf, $y, $to, 111, 130);                              // Inclusive Dates (To)
-                        $this->centerText($pdf, $y, $training->number_of_hours ?? '', 131, 145); // Number of Hours
-                        $this->centerText($pdf, $y, $training->type_of_ld ?? '', 146, 170);      // Type (e.g. Managerial, Supervisory, Technical)
-                        $this->centerText($pdf, $y, $training->conducted_by ?? '', 171, 200);    // Conducted/Sponsored By
+                        $this->centerText($pdf, $y, $training->training_title ?? '', 27, 90);    // Title of Learning and Development
+                        $this->centerText($pdf, $y, $from, 100, 110);                             // Inclusive Dates (From)
+                        $this->centerText($pdf, $y, $to, 107, 130);                              // Inclusive Dates (To)
+                        $this->centerText($pdf, $y, $training->number_of_hours ?? '', 119, 145); // Number of Hours
+                        $this->centerText($pdf, $y, $training->type_of_ld ?? '', 122, 170);      // Type (e.g. Managerial, Supervisory, Technical)
+                        $this->centerText($pdf, $y, $training->conducted_by ?? '', 150, 200);    // Conducted/Sponsored By
                     }
                 }
             }
@@ -433,7 +433,7 @@ class PdsPdfController extends Controller
 
             if ($pageNo === 3) { 
                 $pdf->SetFont('Arial', '', 7);
-                $yStart = 170; // adjust to match row start
+                $yStart = 231; // adjust to match row start
                 $rowHeight = 6;
                 $maxRows = 7; // number of table rows in your PDF
 
@@ -445,7 +445,7 @@ class PdsPdfController extends Controller
 
                         // Same layout style as your L&D table
                         $this->centerText($pdf, $y, $record->special_skills ?? '', 10, 80);              // Special Skills
-                        $this->centerText($pdf, $y, $record->non_academic_distinctions ?? '', 81, 150);  // Non-Academic Distinctions
+                        $this->centerText($pdf, $y, $record->non_academic_distinctions ?? '', 72, 150);  // Non-Academic Distinctions
                         $this->centerText($pdf, $y, $record->membership_in_organization ?? '', 151, 200); // Membership in Organization
                     }
                 }
