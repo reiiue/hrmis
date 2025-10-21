@@ -22,6 +22,31 @@ class PdsPdfController extends Controller
         $pdf->Text($x, $y, $text);
     }
 
+    /**
+     * Format a date string or return empty string
+     */
+    private function formatDate($date)
+    {
+        if (!$date) {
+            return '';
+        }
+
+        return Carbon::parse($date)->format('m/d/Y');
+    }
+
+    /**
+     * Draw a checkbox: place a check at yesX if $value is truthy ("yes"), else at noX
+     */
+    private function drawCheckbox($pdf, $yesX, $noX, $y, $value)
+    {
+        $pdf->SetFont('ZapfDingbats', '', 7);
+        if (strtolower((string)$value) === 'yes') {
+            $pdf->Text($yesX, $y, chr(52));
+        } else {
+            $pdf->Text($noX, $y, chr(52));
+        }
+    }
+
     public function download()
     {
         $filePath = public_path('pdfs/pds.pdf'); // Path to PDS PDF
@@ -41,7 +66,16 @@ class PdsPdfController extends Controller
             'membershipAssociations',
             'learningDevelopments',
             'specialSkillsHobbies',
+            'relationshipToAuthority',
+            'legalCase',
+            'employmentSeparation',
+            'politicalActivity',
         ])->where('user_id', $user->id)->first();
+
+        // If there's no personal information, abort early
+        if (!$personalInfo) {
+            return abort(404, 'PDS not found');
+        }
 
         // -----------------------------
         // Personal Information
@@ -50,9 +84,7 @@ class PdsPdfController extends Controller
         $first_name  = $personalInfo?->first_name ?? '';
         $middle_name = $personalInfo?->middle_name ?? '';
         $suffix      = $personalInfo?->suffix ?? '';
-        $date_of_birth = $personalInfo?->date_of_birth
-            ? Carbon::parse($personalInfo->date_of_birth)->format('m/d/Y')
-            : '';
+        $date_of_birth = $this->formatDate($personalInfo?->date_of_birth);
         $place_of_birth = $personalInfo?->place_of_birth ?? '';
         $sex         = $personalInfo?->sex ?? '';
         $civil_status = $personalInfo?->civil_status ?? '';
@@ -70,12 +102,12 @@ class PdsPdfController extends Controller
         // -----------------------------
         // Government IDs
         // -----------------------------
-        $governmentIds = GovernmentId::where('personal_information_id', $personalInfo->id)->first();
-        $gsis_id = $governmentIds?->gsis_id ?? '';
-        $pagibig_id = $governmentIds?->pagibig_id ?? ''; 
-        $philhealth_id = $governmentIds?->philhealth_id ?? '';
-        $sss_id = $governmentIds?->sss_id ?? '';
-        $tin_id = $governmentIds?->tin_id ?? '';
+    $governmentIds = GovernmentId::where('personal_information_id', $personalInfo->id)->first();
+    $gsis_id = $governmentIds?->gsis_id ?? '';
+    $pagibig_id = $governmentIds?->pagibig_id ?? '';
+    $philhealth_id = $governmentIds?->philhealth_id ?? '';
+    $sss_id = $governmentIds?->sss_id ?? '';
+    $tin_id = $governmentIds?->tin_id ?? '';
 
         // -----------------------------
         // Permanent Address
@@ -118,16 +150,36 @@ class PdsPdfController extends Controller
         $business_address = $personalInfo?->spouse?->business_address ?? '';
         $spouse_tel = $personalInfo?->spouse?->telephone_no ?? '';
 
+        // Relationship to Authority
+        $relationAuthority = $personalInfo?->relationshipToAuthority;
+        $thirdDegree = $relationAuthority?->within_third_degree ?? '';
+        $fourthDegree = $relationAuthority?->within_fourth_degree ?? '';
+        $relationDetails = $relationAuthority?->details ?? '';
+
+        //Legal Case
+        $legalCase = $personalInfo?->legalCase;
+
+        $has_admin_offense = $legalCase?->has_admin_offense ?? '';
+        $offense_details = $legalCase?->offense_details ?? '';
+
+        $has_criminal_case = $legalCase?->has_criminal_case ?? '';
+        $date_filed = $legalCase?->date_filed
+            ? Carbon::parse($legalCase->date_filed)->format('m/d/Y')
+            : '';
+        $status_of_case = $legalCase?->status_of_case ?? '';
+
+        $has_been_convicted = $legalCase?->has_been_convicted ?? '';
+        $conviction_details = $legalCase?->conviction_details ?? ''; 
+
         // -----------------------------
         // Children
         // -----------------------------
         $children = $personalInfo?->children ?? collect();
 
-        // -----------------------------
-        // Educational Background
-        // -----------------------------
-        $educations = $personalInfo?->educationalBackgrounds ?? collect();
+        $employmentSeparation = $personalInfo->employmentSeparation; // relationship
 
+        $has_been_separated = $employmentSeparation->has_been_separated ?? 'no';
+        $separation_details = $employmentSeparation->details ?? '';
 
         // -----------------------------
         // PDF Fill
@@ -253,9 +305,7 @@ class PdsPdfController extends Controller
                         $child = $children[$i];
                         $pdf->Text(122, $y, $child->full_name);
 
-                        $dob = $child->date_of_birth
-                            ? Carbon::parse($child->date_of_birth)->format('m/d/Y')
-                            : '';
+                                        $dob = $this->formatDate($child->date_of_birth);
                         $pdf->Text(170, $y, $dob);
                     }
                 }
@@ -264,6 +314,8 @@ class PdsPdfController extends Controller
             // -----------------------------
             // Educational Background
             // -----------------------------
+
+            $educations = $personalInfo?->educationalBackgrounds ?? collect();
             if ($pageNo === 1) {
                 $pdf->SetFont('Arial', '', 8);
                 $yStart = 231;    // starting Y for education section
@@ -280,23 +332,23 @@ class PdsPdfController extends Controller
 
                 foreach ($levels as $idx => $level) {
                     $y = $yStart + ($idx * $rowHeight);
-                    $edu = $educations->firstWhere('level', $level);
+                        $edu = $educations->firstWhere('level', $level);
 
-                    if ($edu) {
-                        $pdf->Text(54, $y, $edu->school_name);
-                        $pdf->Text(96, $y, $edu->degree_course);
-                        $pdf->Text(134, $y, $edu->period_from);
-                        $pdf->Text(144.5, $y, $edu->period_to);
-                        $pdf->Text(157, $y, $edu->highest_level_unit_earned);
-                        $pdf->Text(171, $y, $edu->year_graduated);
-                        $pdf->Text(184.5, $y, $edu->scholarship_honors);
-                    }
+                        if ($edu) {
+                            $pdf->Text(54, $y, $edu->school_name);
+                            $pdf->Text(96, $y, $edu->degree_course);
+                            $pdf->Text(134, $y, $edu->period_from);
+                            $pdf->Text(144.5, $y, $edu->period_to);
+                            $pdf->Text(157, $y, $edu->highest_level_unit_earned);
+                            $pdf->Text(171, $y, $edu->year_graduated);
+                            $pdf->Text(184.5, $y, $edu->scholarship_honors);
+                        }
                 }
             }
 
 
             // Civil Service Eligibilities
-           $eligibilities = $personalInfo?->civilServiceEligibilities ?? collect();
+            $eligibilities = $personalInfo?->civilServiceEligibilities ?? collect();
 
             if ($pageNo === 2) {
                 $pdf->SetFont('Arial', '', 7);
@@ -313,14 +365,10 @@ class PdsPdfController extends Controller
                         // Centered text between column boundaries
                         $this->centerText($pdf, $y, $elig->eligibility_type ?? '', 25, 75); // Eligibility type
                         $this->centerText($pdf, $y, $elig->rating ?? '', 78, 95);           // Rating
-                        $this->centerText($pdf, $y, $elig->exam_date
-                            ? Carbon::parse($elig->exam_date)->format('m/d/Y')
-                            : '', 97, 115);                                                // Date of exam
+                        $this->centerText($pdf, $y, $this->formatDate($elig->exam_date), 97, 115); // Date of exam
                         $this->centerText($pdf, $y, $elig->exam_place ?? '', 116, 170);     // Place of exam
                         $this->centerText($pdf, $y, $elig->license_number ?? '', 170, 180); // License number
-                        $this->centerText($pdf, $y, $elig->license_validity
-                            ? Carbon::parse($elig->license_validity)->format('m/d/Y')
-                            : '', 185, 193);                                               // Validity date
+                        $this->centerText($pdf, $y, $this->formatDate($elig->license_validity), 185, 193); // Validity date
                     }
                 }
             }
@@ -341,12 +389,8 @@ class PdsPdfController extends Controller
                         $work = $workExperiences[$i];
 
                         // Format dates
-                        $dateFrom = $work->inclusive_date_from_work
-                            ? Carbon::parse($work->inclusive_date_from_work)->format('m/d/Y')
-                            : '';
-                        $dateTo = $work->inclusive_date_to_work
-                            ? Carbon::parse($work->inclusive_date_to_work)->format('m/d/Y')
-                            : '';
+                        $dateFrom = $this->formatDate($work->inclusive_date_from_work);
+                        $dateTo = $this->formatDate($work->inclusive_date_to_work);
 
                         // Draw text centered within columns
                         $this->centerText($pdf, $y, $dateFrom, 24, 40);                     // From
@@ -377,12 +421,8 @@ class PdsPdfController extends Controller
                         $member = $memberships[$i];
 
                         // Format date fields
-                        $periodFrom = $member->period_from
-                            ? Carbon::parse($member->period_from)->format('m/d/Y')
-                            : '';
-                        $periodTo = $member->period_to
-                            ? Carbon::parse($member->period_to)->format('m/d/Y')
-                            : '';
+                        $periodFrom = $this->formatDate($member->period_from);
+                        $periodTo = $this->formatDate($member->period_to);
 
                         // Draw text centered within your defined column coordinates
                         $this->centerText($pdf, $y, $member->organization_name ?? '', 28, 90); // Name of Organization
@@ -410,12 +450,8 @@ class PdsPdfController extends Controller
                         $training = $trainings[$i];
 
                         // Format dates
-                        $from = $training->inclusive_date_from
-                            ? Carbon::parse($training->inclusive_date_from)->format('m/d/Y')
-                            : '';
-                        $to = $training->inclusive_date_to
-                            ? Carbon::parse($training->inclusive_date_to)->format('m/d/Y')
-                            : '';
+                        $from = $this->formatDate($training->inclusive_date_from);
+                        $to = $this->formatDate($training->inclusive_date_to);
 
                         // Fill in text using centerText helper — adjust X coordinates to match your PDF columns
                         $this->centerText($pdf, $y, $training->training_title ?? '', 27, 90);    // Title of Learning and Development
@@ -451,6 +487,127 @@ class PdsPdfController extends Controller
                 }
             }
 
+
+            if ($pageNo === 4) {
+                $pdf->SetFont('Arial', '', 8);
+
+                // Checkboxes for Within 3rd Degree and Within 4th Degree
+                $this->drawCheckbox($pdf, 135.3, 154, 24, $thirdDegree);
+                $this->drawCheckbox($pdf, 135.3, 154, 28.7, $fourthDegree);
+
+                // Details textarea
+                $pdf->SetFont('Arial', '', 8);
+                $pdf->SetXY(140, 34);
+                $pdf->MultiCell(170, 4, $relationDetails);
+            }
+
+
+            if ($pageNo === 4) {
+
+                // ===== Q1: ADMINISTRATIVE OFFENSE =====
+                $this->drawCheckbox($pdf, 135, 154, 42.5, $has_admin_offense);
+
+                // Details
+                $pdf->SetFont('Arial', '', 8);
+                $pdf->SetXY(140, 48);
+                $pdf->MultiCell(170, 4, $offense_details);
+
+                // ===== Q2: CRIMINAL CASE =====
+                $this->drawCheckbox($pdf, 135, 155, 57.2, $has_criminal_case);
+
+                $criminalDetails = trim(($date_filed ? $date_filed . "\n" : '') . ($status_of_case ?? ''));
+
+                $pdf->SetFont('Arial', '', 8);
+                $pdf->SetXY(157, 62);
+                $pdf->MultiCell(170, 4, $criminalDetails);
+
+                // ===== Q3: CONVICTION =====
+                $this->drawCheckbox($pdf, 134.7, 156, 75.5, $has_been_convicted);
+
+                // Details
+                $pdf->SetFont('Arial', '', 8);
+                $pdf->SetXY(140, 81);
+                $pdf->MultiCell(170, 4, $conviction_details);
+
+                // ===== Q4: SEPARATION FROM SERVICE =====
+                $this->drawCheckbox($pdf, 134.5, 156, 90, $has_been_separated);
+
+                // Details
+                $pdf->SetFont('Arial', '', 7);
+                $pdf->SetXY(140, 93);
+                $pdf->MultiCell(170, 4, $separation_details ?? '');
+
+
+                // ===== Q5: POLITICAL ACTIVITIES =====
+
+                // Fetch political activities (assuming relationship exists)
+                $political = $personalInfo->politicalActivity ?? null;
+
+                // Question 1: Have you been a candidate in a national or local election?
+                $this->drawCheckbox($pdf, 135, 158, 102, $political?->has_been_candidate ?? 'no');
+
+                // Election Details
+                $pdf->SetFont('Arial', '', 7);
+                $pdf->SetXY(157, 103);
+                $pdf->MultiCell(170, 4, $political->election_details ?? '');
+
+                // Question 2: Have you resigned from the government service during the campaign period?
+                $this->drawCheckbox($pdf, 135, 158, 111, $political?->has_resigned_for_campaigning ?? 'no');
+
+                // Campaign Details
+                $pdf->SetFont('Arial', '', 7);
+                $pdf->SetXY(157, 113);
+                $pdf->MultiCell(170, 4, $political->campaign_details ?? '');
+
+
+                // ===== Q6: IMMIGRATION STATUS =====
+
+                // Fetch immigration status (assuming relationship exists)
+                $immigration = $personalInfo->immigrationStatus ?? null;
+
+                // Question: Are you a dual citizen by birth or naturalization?
+                $this->drawCheckbox($pdf, 135, 157.5, 121.5, $immigration?->has_immigrant_status ?? 'no');
+
+                // Country
+                $pdf->SetFont('Arial', '', 7);
+                $pdf->SetXY(138, 126);
+                $countryName = $immigration && $immigration->country ? $immigration->country->name : '';
+                $pdf->MultiCell(170, 4, $countryName);
+
+                // ===== Q7: SPECIAL STATUS =====
+
+                // Fetch special status (assuming relationship exists)
+                $specialStatus = $personalInfo->specialStatus ?? null;
+
+                // ========== Indigenous Group Membership ==========
+                $this->drawCheckbox($pdf, 135, 158, 143, $specialStatus?->is_indigenous_member ?? 'no');
+
+                // Indigenous Group Name
+                $pdf->SetFont('Arial', '', 7);
+                $pdf->SetXY(170, 143.5);
+                $indigenousGroup = $specialStatus && $specialStatus->indigenous_group_name ? $specialStatus->indigenous_group_name : '';
+                $pdf->MultiCell(170, 4, $indigenousGroup);
+
+                // ========== Person With Disability ==========
+                $this->drawCheckbox($pdf, 135, 158, 150.3, $specialStatus?->is_person_with_disability ?? 'no');
+
+                // PWD ID Number
+                $pdf->SetFont('Arial', '', 7);
+                $pdf->SetXY(170, 151.5);
+                $pwdId = $specialStatus && $specialStatus->pwd_id_number ? $specialStatus->pwd_id_number : '';
+                $pdf->MultiCell(170, 4, $pwdId);
+
+                // ========== Solo Parent ==========
+                $this->drawCheckbox($pdf, 135, 158, 158.3, $specialStatus?->is_solo_parent ?? 'no');
+
+                // Solo Parent ID Number
+                $pdf->SetFont('Arial', '', 7);
+                $pdf->SetXY(170, 158.5);
+                $soloParentId = $specialStatus && $specialStatus->solo_parent_id_number ? $specialStatus->solo_parent_id_number : '';
+                $pdf->MultiCell(170, 4, $soloParentId);
+
+
+            }
         }
 
         

@@ -51,6 +51,7 @@ class PDSController extends Controller
         $legalCase = null;
         $politicalActivity = null;
         $specialStatus = null;
+        $special_skills_hobbies = collect();
 
         if ($personalInfo) {
             $residentialAddress = $personalInfo->addresses()
