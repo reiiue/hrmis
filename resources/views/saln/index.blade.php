@@ -31,6 +31,7 @@
                 @include('saln.liabilities')
                 @include('saln.business_interests')
                 @include('saln.relatives_in_gov_service')
+                @include('saln.certification_and_oath')
 
                 {{-- Save and Download Buttons --}}
             
@@ -39,7 +40,7 @@
 
                 <div class="text-end mt-3">
                     <button type="submit" class="btn btn-primary">Save</button>
-                    <a href="{{ route('saln.pdf') }}" target="_blank" class="btn btn-success">Download PDF</a>
+                    <a href="{{ route('saln.download') }}" target="_blank" class="btn btn-success">Download PDF</a>
                 </div>
             </form>
         </div>

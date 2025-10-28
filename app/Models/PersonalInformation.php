@@ -188,6 +188,11 @@ class PersonalInformation extends Model
         return $this->hasMany(RelativeInGovService::class);
     }
 
+    public function salnCertification()
+    {
+        return $this->hasOne(SalnCertification::class, 'personal_information_id');
+    }
+
     
     
     }

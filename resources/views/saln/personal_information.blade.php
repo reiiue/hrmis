@@ -6,27 +6,32 @@
                 <em>Note: Husband and wife who are both public officials and employees may file jointly or separately.</em>
             </small>
         </div>
-        <div class="d-inline-block" style="font-size:13px;">
-            <label class="me-4">
-                <input type="radio" class="form-check-input "name="filing_type" value="joint"
+
+        <div class="d-inline-block" style="font-size: 14px;"> {{-- Increased font size --}}
+            <label class="me-5" style="font-size: 14px;">
+                <input type="radio" class="form-check-input me-1" name="filing_type" value="joint"
+                    style="transform: scale(1.0);" {{-- make radio button bigger --}}
                     {{ old('filing_type', $personalInfo->filing_type ?? '') == 'joint' ? 'checked' : '' }}>
                 Joint Filing
             </label>
 
-            <label class="me-4">
-                <input type="radio" class="form-check-input "name="filing_type" value="separate"
+            <label class="me-5" style="font-size: 14px;">
+                <input type="radio" class="form-check-input me-1" name="filing_type" value="separate"
+                    style="transform: scale(1.0);"
                     {{ old('filing_type', $personalInfo->filing_type ?? '') == 'separate' ? 'checked' : '' }}>
                 Separate Filing
             </label>
 
-            <label>
-                <input type="radio" class="form-check-input name="filing_type" value="not_applicable"
+            <label style="font-size: 14px;">
+                <input type="radio" class="form-check-input me-1" name="filing_type" value="not_applicable"
+                    style="transform: scale(1.0);"
                     {{ old('filing_type', $personalInfo->filing_type ?? '') == 'not_applicable' ? 'checked' : '' }}>
                 Not Applicable
             </label>
         </div>
     </td>
 </tr>
+
 
 <tr>
     <td colspan="2" style="height: 20px; border: none;"></td>
@@ -110,6 +115,7 @@
 <tr>
     <td colspan="2" style="height: 40px; border: none;"></td>
 </tr>
+
 {{-- Row 1: Spouse & Position --}}
 <tr>
     <td class="left-cell">

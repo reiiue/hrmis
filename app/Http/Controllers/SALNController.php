@@ -15,6 +15,8 @@ use App\Models\Liability;
 use App\Models\TotalCosts;
 use App\Models\BusinessInterest;
 use App\Models\RelativeInGovService;
+use App\Models\SalnCertification;
+
 
 class SALNController extends Controller
 {
@@ -72,6 +74,8 @@ class SALNController extends Controller
         $no_business_interest = $personalInfo?->businessInterests()
         ->where('no_business_interest', true)
         ->exists();
+        
+        $saln_certification = SalnCertification::where('personal_information_id', $personalInfo->id)->first();
 
         // ✅ Relatives in Government Service
         $relatives_in_gov_service = RelativeInGovService::where('personal_information_id', $personalInfo->id)->get();
@@ -92,7 +96,8 @@ class SALNController extends Controller
             'business_interests',
             'no_business_interest',
             'relatives_in_gov_service',
-            'no_relative_in_gov_service'
+            'no_relative_in_gov_service',
+            'saln_certification'
         ));
     }
 
@@ -165,6 +170,13 @@ class SALNController extends Controller
             'position_of_relative.*'  => 'nullable|string|max:255',
             'name_of_agency.*'     => 'nullable|string|max:255',
             'no_relative_in_gov_service' => 'nullable|boolean',
+
+            // ✅ Certification Fields
+            'government_issued_id' => 'nullable|string|max:255',
+            'id_no' => 'nullable|string|max:255',
+            'date_issued' => 'nullable|date',
+            'place_issued' => 'nullable|string|max:255',
+            'signature' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         $user = Auth::user();
@@ -355,26 +367,27 @@ class SALNController extends Controller
                 'net_worth'               => $netWorth,
             ]
         );
-
+        
         // --- Business Interests ---
-        $businessIdsFromForm = $request->input('business_interest_id', []);
-        $businessNames       = $request->input('name_of_business', []);
+        $businessIdsFromForm  = $request->input('business_interest_id', []);
+        $businessNames        = $request->input('name_of_business', []);
         $processedBusinessIds = [];
 
-        // ✅ Handle business interest entries
         foreach ($businessNames as $index => $name) {
             if ($name) {
                 $business = BusinessInterest::updateOrCreate(
                     [
                         'id' => $businessIdsFromForm[$index] ?? null,
                         'personal_information_id' => $personalInfo->id,
+                        'reporting_year' => $reportingYear,
                     ],
                     [
-                        'name_of_business'         => $name,
-                        'business_address'         => $request->business_address[$index] ?? null,
-                        'name_of_business_interest'=> $request->name_of_business_interest[$index] ?? null,
-                        'date_of_acquisition'      => $request->date_of_acquisition[$index] ?? null,
-                        'no_business_interest'     => false, // Explicitly false when businesses exist
+                        'name_of_business'          => $name,
+                        'business_address'          => $request->business_address[$index] ?? null,
+                        'name_of_business_interest' => $request->name_of_business_interest[$index] ?? null,
+                        'date_of_acquisition'       => $request->date_of_acquisition[$index] ?? null,
+                        'no_business_interest'      => false,
+                        'reporting_year'            => $reportingYear,
                     ]
                 );
 
@@ -387,13 +400,16 @@ class SALNController extends Controller
             $business = BusinessInterest::updateOrCreate(
                 [
                     'personal_information_id' => $personalInfo->id,
-                    'no_business_interest'    => true,
+                    'reporting_year'           => $reportingYear,
+                    'no_business_interest'     => true,
                 ],
                 [
-                    'name_of_business'         => null,
-                    'business_address'         => null,
-                    'name_of_business_interest'=> null,
-                    'date_of_acquisition'      => null,
+                    'name_of_business'          => null,
+                    'business_address'          => null,
+                    'name_of_business_interest' => null,
+                    'date_of_acquisition'       => null,
+                    'no_business_interest'      => true,
+                    'reporting_year'            => $reportingYear,
                 ]
             );
 
@@ -402,31 +418,31 @@ class SALNController extends Controller
 
         // ✅ Clean up removed records
         BusinessInterest::where('personal_information_id', $personalInfo->id)
+            ->where('reporting_year', $reportingYear)
             ->whereNotIn('id', $processedBusinessIds)
             ->delete();
 
-/**
- * --- Handle Relatives in Government Service ---
- */
+            
+
 if ($request->boolean('no_relative_in_gov_service')) {
-    // Delete all relatives and insert a "no relatives" flag row
     RelativeInGovService::where('personal_information_id', $personalInfo->id)->delete();
     RelativeInGovService::create([
-        'personal_information_id' => $personalInfo->id,
-        'no_relative_in_gov_service' => true,
+        'personal_information_id'     => $personalInfo->id,
+        'no_relative_in_gov_service'  => true,
+        'reporting_year'              => $request->input('reporting_year', date('Y')), // ✅ add this
     ]);
 } else {
     $relativeIds   = $request->relative_id ?? [];
     $names         = $request->name_of_relative ?? [];
     $relationships = $request->relationship ?? [];
-    $positions     = $request->position_of_relative ?? []; // ✅ FIXED column name
+    $positions     = $request->position_of_relative ?? [];
     $agencies      = $request->name_of_agency ?? [];
 
     $processedRelativeIds = [];
 
     foreach ($names as $i => $name) {
         if (empty($name) && empty($relationships[$i]) && empty($positions[$i]) && empty($agencies[$i])) {
-            continue; // skip empty rows
+            continue;
         }
 
         if (!empty($relativeIds[$i])) {
@@ -435,9 +451,10 @@ if ($request->boolean('no_relative_in_gov_service')) {
                 $relative->update([
                     'name_of_relative'           => $name,
                     'relationship'               => $relationships[$i] ?? null,
-                    'position_of_relative'       => $positions[$i] ?? null, // ✅ FIXED column name
+                    'position_of_relative'       => $positions[$i] ?? null,
                     'name_of_agency'             => $agencies[$i] ?? null,
                     'no_relative_in_gov_service' => false,
+                    'reporting_year'             => $request->input('reporting_year', date('Y')), // ✅ add this
                 ]);
                 $processedRelativeIds[] = $relative->id;
             }
@@ -446,19 +463,46 @@ if ($request->boolean('no_relative_in_gov_service')) {
                 'personal_information_id'     => $personalInfo->id,
                 'name_of_relative'            => $name,
                 'relationship'                => $relationships[$i] ?? null,
-                'position_of_relative'        => $positions[$i] ?? null, // ✅ FIXED column name
+                'position_of_relative'        => $positions[$i] ?? null,
                 'name_of_agency'              => $agencies[$i] ?? null,
                 'no_relative_in_gov_service'  => false,
+                'reporting_year'              => $request->input('reporting_year', date('Y')), // ✅ add this
             ]);
             $processedRelativeIds[] = $relative->id;
         }
     }
 
-    // Clean up removed relatives
     RelativeInGovService::where('personal_information_id', $personalInfo->id)
         ->whereNotIn('id', $processedRelativeIds)
         ->delete();
 }
+
+        /**
+         * ==================================================
+         * ✅ SALN CERTIFICATION SECTION
+         * ==================================================
+         */
+        $certificationData = [
+            'government_issued_id' => $request->government_issued_id,
+            'id_no' => $request->id_no,
+            'date_issued' => $request->date_issued,
+            'place_issued' => $request->place_issued,
+            'reporting_year' => $reportingYear,
+        ];
+
+        // ✅ Handle signature upload
+        if ($request->hasFile('signature')) {
+            $file = $request->file('signature');
+            $fileName = 'signature_' . $personalInfo->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('uploads/signatures'), $fileName);
+            $certificationData['signature_path'] = 'uploads/signatures/' . $fileName;
+        }
+
+        SalnCertification::updateOrCreate(
+            ['personal_information_id' => $personalInfo->id],
+            $certificationData
+        );
+
 
 
 return redirect()->route('saln.index')->with('success', 'SALN saved successfully!');

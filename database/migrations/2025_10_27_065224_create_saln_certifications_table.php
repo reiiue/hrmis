@@ -11,16 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('business_interests', function (Blueprint $table) {
+        Schema::create('saln_certifications', function (Blueprint $table) {
             $table->id();
             $table->foreignId('personal_information_id')->constrained()->onDelete('cascade');
-            $table->string('name_of_business')->nullable();
-            $table->string('business_address')->nullable();
-            $table->string('name_of_business_interest')->nullable();
-            $table->date('date_of_acquisition')->nullable();
-            $table->boolean('no_business_interest')->default(false);
-            $table->year('reporting_year')->nullable();
-
+            $table->string('signature_of_declarant')->nullable(); // path to uploaded signature image
+            $table->string('government_issued_id')->nullable();
+            $table->string('id_no')->nullable();
+            $table->date('date_issued')->nullable();
             $table->timestamps();
         });
     }
@@ -30,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('business_interests');
+        Schema::dropIfExists('saln_certifications');
     }
 };

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('position_of_relative')->nullable();
             $table->string('name_of_agency')->nullable();
             $table->boolean('no_relative_in_gov_service')->default(false);
+            $table->year('reporting_year')->nullable();
             $table->timestamps();
 
             $table->foreign('personal_information_id')

@@ -18,6 +18,7 @@ class BusinessInterest extends Model
         'name_of_business_interest',
         'date_of_acquisition',
         'no_business_interest',
+        'reporting_year',
     ];
 
     /**

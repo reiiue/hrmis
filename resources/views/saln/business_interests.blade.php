@@ -22,6 +22,8 @@
         <span>I/We do not have any business interest or financial connection.</span>
     </label>
 </div>
+<input type="hidden" name="reporting_year" value="{{ $reportingYear ?? date('Y') }}">
+
 
 {{-- Subsection Header --}}
 <table class="table saln-table">
@@ -41,6 +43,7 @@
                 DATE OF ACQUISITION
             </td>
         </tr>
+        
 
         {{-- Dynamic Rows --}}
         @php $businessOld = old('name_of_business', []); @endphp

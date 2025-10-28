@@ -19,7 +19,7 @@
         <main class="main-content">
             <!-- Header -->
             <header class="header">
-                <h1>Admin Dashboard</h1>
+                <h1>Employee Dashboard</h1>
                 <div class="user-profile">
                     <div class="user-avatar">
                         {{ strtoupper(

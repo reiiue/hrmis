@@ -4,6 +4,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PDSController;
 use App\Http\Controllers\PdsPdfController;
 use App\Http\Controllers\SALNController;
+use App\Http\Controllers\SalnPdfController;
+
 
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -37,6 +39,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/saln/store', [SALNController::class, 'update'])->name('saln.update');
 
     // Download PDF (optional, if you want it like PDS)
-    Route::get('/saln/pdf', [SALNController::class, 'downloadPdf'])->name('saln.pdf');
+    Route::get('/saln/download', [SalnPdfController::class, 'download'])->name('saln.download');
 });
 

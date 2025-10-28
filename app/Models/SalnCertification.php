@@ -5,20 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class RelativeInGovService extends Model
+class SalnCertification extends Model
 {
     use HasFactory;
 
-    protected $table = 'relatives_in_gov_service';
-
     protected $fillable = [
         'personal_information_id',
-        'name_of_relative',
-        'relationship',
-        'position_of_relative',
-        'name_of_agency',
-        'no_relative_in_gov_service',
-        'reporting_year',
+        'signature_of_declarant',
+        'government_issued_id',
+        'id_no',
+        'date_issued',
     ];
 
     public function personalInformation()
