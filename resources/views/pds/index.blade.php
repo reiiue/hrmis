@@ -9,10 +9,15 @@
 
 
 <div class="wrapper">
-
-
 <!-- Main Content -->
-@include('partials.sidebar')
+    <!-- Sidebar -->
+    @if (Auth::user()->role === 'Employee')
+        @include('layouts.sidebar_employee')
+    @elseif (Auth::user()->role === 'HR')
+        @include('layouts.sidebar_hr')
+    @elseif (Auth::user()->role === 'Admin')
+        @include('layouts.sidebar_admin')
+    @endif
 <div class="pds-container bg-white shadow-sm p-4">
 
     <h4 class="mb-4 text-center">Personal Data Sheet (PDS)</h4>
@@ -62,7 +67,7 @@
             
         <div class="text-end mt-3">
             <button type="submit" class="btn btn-primary">Save</button>
-            <a href="{{ route('pdf.download') }}" target="_blank" class="btn btn-success">Download PDF</a>
+            <a href="{{ route('pds.pdf') }}" target="_blank" class="btn btn-success">Download PDF</a>
         </div>
 
     </form>

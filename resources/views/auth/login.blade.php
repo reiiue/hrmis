@@ -1,24 +1,42 @@
 @extends('layouts.app')
 
-@section('title', 'Login')
+@section('title', ucfirst($role ?? 'User') . ' Login')
 
 @section('content')
-<h2>Login</h2>
+    <h2>{{ ucfirst($role ?? 'User') }} Login</h2>
 
-@if ($errors->any())
-    <div style="color: red">{{ $errors->first() }}</div>
-@endif
+    @if ($errors->any())
+        <div style="color: red; margin-bottom: 10px;">
+            {{ $errors->first() }}
+        </div>
+    @endif
 
-<form method="POST" action="{{ route('login') }}">
-    @csrf
-    <label>Username:
-        <input type="text" name="username" required>
-    </label><br>
-    <label>Password:
-        <input type="password" name="password" required>
-    </label><br>
-    <button type="submit">Login</button>
-</form>
+    <form method="POST" action="{{ route('login') }}">
+        @csrf
 
-<p>Don't have an account? <a href="{{ route('register') }}">Register</a></p>
+        {{-- ✅ Hidden role input (from /login/admin or /login/employee) --}}
+        <input type="hidden" name="role" value="{{ $role }}">
+
+        <label>
+            Username:
+            <input type="text" name="username" value="{{ old('username') }}" required autofocus>
+        </label><br><br>
+
+        <label>
+            Password:
+            <input type="password" name="password" required>
+        </label><br><br>
+
+        <button type="submit">Login</button>
+    </form>
+
+    <p style="margin-top: 15px;">
+        Don’t have an account?
+        <a href="{{ route('register') }}">Register</a>
+    </p>
+
+    {{-- Optional: Back to role selection --}}
+    @if ($role)
+        <p><a href="{{ route('home') }}">← Back to role selection</a></p>
+    @endif
 @endsection

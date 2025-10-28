@@ -9,7 +9,13 @@
 
 <div class="dashboard-container">
     <!-- Sidebar -->
-    @include('partials.sidebar')
+    @if (Auth::user()->role === 'Employee')
+        @include('layouts.sidebar_employee')
+    @elseif (Auth::user()->role === 'HR')
+        @include('layouts.sidebar_hr')
+    @elseif (Auth::user()->role === 'Admin')
+        @include('layouts.sidebar_admin')
+    @endif
 
     <!-- SALN Main Content -->
     <main class="saln-main-content">
