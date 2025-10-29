@@ -9,17 +9,27 @@ class User extends Authenticatable
 {
     use Notifiable;
 
-    protected $fillable = ['username', 'password', 'role', 'status'];
+    protected $fillable = ['email', 'password', 'role', 'status'];
     protected $hidden = ['password'];
 
     public function getAuthIdentifierName()
     {
-        return 'username';
+        return 'email'; 
     }
 
     public function personalInformation()
 {
     return $this->hasOne(PersonalInformation::class);
+}
+
+public function pds()
+{
+    return $this->hasOne(PDS::class);
+}
+
+public function saln()
+{
+    return $this->hasOne(SALN::class);
 }
 
 }

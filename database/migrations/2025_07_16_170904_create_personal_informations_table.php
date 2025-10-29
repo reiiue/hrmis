@@ -31,6 +31,7 @@ return new class extends Migration
             $table->string('mobile_no')->nullable();
             $table->string('agency_employee_no')->nullable();
             $table->enum('filing_type', ['joint', 'separate', 'not_applicable'])->nullable();
+            $table->string('department')->nullable();
             $table->timestamps();
 
             $table->foreign('dual_citizenship_country_id')->references('id')->on('countries')->nullOnDelete();

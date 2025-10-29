@@ -9,9 +9,11 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    /**
+     * Show login page based on role (Admin, HR, or Employee)
+     */
     public function showLogin($role = null)
     {
-        // Allow admin, employee, and hr
         if ($role !== null && !in_array(strtolower($role), ['admin', 'employee', 'hr'])) {
             abort(404);
         }
@@ -19,85 +21,97 @@ class AuthController extends Controller
         return view('auth.login', ['role' => $role]);
     }
 
+    /**
+     * Handle login request
+     */
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string',
+            'role' => 'nullable|string'
+        ]);
 
-public function login(Request $request)
-{
-    $request->validate([
-        'username' => 'required',
-        'password' => 'required',
-        'role' => 'nullable|string'
-    ]);
+        $credentials = $request->only('email', 'password');
 
-    $user = User::where('username', $request->username)->first();
+        // Attempt login
+        if (!Auth::attempt($credentials)) {
+            return back()->withErrors(['email' => 'Invalid email or password.']);
+        }
 
-    if (!$user || !Hash::check($request->password, $user->password)) {
-        return back()->withErrors(['username' => 'Invalid credentials.']);
+        // Regenerate session to prevent fixation
+        $request->session()->regenerate();
+
+        $user = Auth::user();
+
+        // Check account status
+        if ($user->status !== 'Active') {
+            Auth::logout();
+            return back()->withErrors(['email' => 'Account is ' . $user->status . '.']);
+        }
+
+        // Check role if specified
+        if ($request->filled('role') && strtolower($user->role) !== strtolower($request->role)) {
+            Auth::logout();
+            return back()->withErrors(['email' => 'You are not authorized to log in as ' . ucfirst($request->role) . '.']);
+        }
+
+        // Redirect based on role
+        return match ($user->role) {
+            'Admin' => redirect()->route('admin.dashboard')->with('success', 'Welcome, Admin!'),
+            'HR' => redirect()->route('hr.dashboard')->with('success', 'Welcome, HR!'),
+            'Employee' => redirect()->route('employee.dashboard')->with('success', 'Welcome, Employee!'),
+            default => redirect()->route('home'),
+        };
     }
 
-    if ($user->status !== 'Active') {
-        return back()->withErrors(['username' => 'Account is ' . $user->status]);
-    }
-
-    if ($request->filled('role') && strtolower($user->role) !== strtolower($request->role)) {
-        return back()->withErrors(['username' => 'You are not authorized to log in as ' . ucfirst($request->role) . '.']);
-    }
-
-    Auth::login($user);
-    $request->session()->regenerate();
-
-    // Redirect based on role
-    if ($user->role === 'Admin') {
-        return redirect()->route('admin.dashboard')->with('success', 'Welcome, Admin!');
-    } elseif ($user->role === 'Employee') {
-        return redirect()->route('employee.dashboard')->with('success', 'Welcome, Employee!');
-    } elseif ($user->role === 'HR') {
-        return redirect()->route('hr.dashboard')->with('success', 'Welcome, HR!');
-    }
-
-    return redirect()->route('home');
-}
-
-
+    /**
+     * Show registration form
+     */
     public function showRegister()
     {
         return view('auth.register');
     }
 
+    /**
+     * Handle user registration
+     */
     public function register(Request $request)
     {
         $request->validate([
-            'username' => 'required|unique:users',
-            'password' => 'required|confirmed'
+            'email' => 'required|email|unique:users',
+            'password' => 'required|string|confirmed',
+            'role' => 'required|in:Admin,HR,Employee',
         ]);
 
-        $user = User::create([
-            'username' => $request->username,
+        User::create([
+            'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'Employee', // default role
-            'status' => 'Active'
+            'role' => $request->role,
+            'status' => 'Active',
         ]);
 
-        Auth::login($user);
-        $request->session()->regenerate(); // ✅ Regenerate after login
-
-        return redirect()->route('login');
+        return redirect()->route('login', strtolower($request->role))
+                         ->with('success', 'Registration successful! You can now log in.');
     }
 
+    /**
+     * Logout the user
+     */
     public function logout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        // Redirect to the selection page
-        return redirect()->route('home');
+        return redirect()->route('home')->with('success', 'You have been logged out.');
     }
 
-        public function index()
+    /**
+     * Temporary placeholder (optional)
+     */
+    public function index()
     {
         return view('pds.index');
     }
-
-
-
 }

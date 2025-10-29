@@ -7,6 +7,7 @@ use App\Http\Controllers\PDSController;
 use App\Http\Controllers\PdsPdfController;
 use App\Http\Controllers\SALNController;
 use App\Http\Controllers\SalnPdfController;
+use App\Http\Controllers\Admin\UserManagementController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,7 +22,7 @@ Route::get('/', function () {
 
 // Authentication
 Route::get('/login/{role?}', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -81,4 +82,13 @@ Route::get('/hr/dashboard', function () {
         Route::post('/store', [SALNController::class, 'update'])->name('update');
         Route::get('/download', [SalnPdfController::class, 'download'])->name('download');
     });
+});
+
+Route::middleware(['auth', 'role:Admin'])->group(function () {
+    Route::get('/admin/users', [UserManagementController::class, 'index'])->name('admin.users.index');
+    Route::get('/admin/users/create', [UserManagementController::class, 'create'])->name('admin.users.create');
+    Route::post('/admin/users', [UserManagementController::class, 'store'])->name('admin.users.store');
+    Route::get('/admin/users/{user}/edit', [UserManagementController::class, 'edit'])->name('admin.users.edit');
+    Route::put('/admin/users/{user}', [UserManagementController::class, 'update'])->name('admin.users.update');
+    Route::delete('/admin/users/{user}', [UserManagementController::class, 'destroy'])->name('admin.users.destroy');
 });

@@ -32,7 +32,8 @@ class PersonalInformation extends Model
         'telephone_no',
         'mobile_no',
         'agency_employee_no',
-        'filing_type'
+        'filing_type',
+        'department',
     ];
 
     /**

@@ -67,7 +67,7 @@
             Data Management
         </a>
 
-        <a href="#" class="nav-item">
+        <a href="{{ route('admin.users.index') }}" class="nav-item">
             <i class="fas fa-user-cog"></i>
             User Accounts
         </a>

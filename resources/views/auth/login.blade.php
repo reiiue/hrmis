@@ -11,15 +11,15 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('login') }}">
+    <form method="POST" action="{{ route('login.submit') }}">
         @csrf
 
-        {{-- ✅ Hidden role input (from /login/admin or /login/employee) --}}
+        {{-- ✅ Hidden role input (e.g., admin, employee, hr) --}}
         <input type="hidden" name="role" value="{{ $role }}">
 
         <label>
-            Username:
-            <input type="text" name="username" value="{{ old('username') }}" required autofocus>
+            Email:
+            <input type="email" name="email" value="{{ old('email') }}" required autofocus>
         </label><br><br>
 
         <label>
@@ -35,7 +35,6 @@
         <a href="{{ route('register') }}">Register</a>
     </p>
 
-    {{-- Optional: Back to role selection --}}
     @if ($role)
         <p><a href="{{ route('home') }}">← Back to role selection</a></p>
     @endif
