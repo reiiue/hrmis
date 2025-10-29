@@ -33,25 +33,32 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 */
 Route::middleware(['auth'])->group(function () {
 
-    /*
-    |--------------------------------------------------------------------------
-    | Dashboards
-    |--------------------------------------------------------------------------
-    | Each role gets a separate dashboard.
-    */
-    Route::get('/admin/dashboard', function () {
-        if (Auth::user()->role !== 'Admin') {
-            abort(403, 'Unauthorized access.');
-        }
-        return view('dashboards.admin_dashboard');
-    })->name('admin.dashboard');
+/*
+|--------------------------------------------------------------------------
+| Dashboards
+|--------------------------------------------------------------------------
+| Each role gets a separate dashboard.
+*/
+Route::get('/admin/dashboard', function () {
+    if (Auth::user()->role !== 'Admin') {
+        abort(403, 'Unauthorized access.');
+    }
+    return view('dashboards.admin_dashboard');
+})->name('admin.dashboard');
 
-    Route::get('/employee/dashboard', function () {
-        if (Auth::user()->role !== 'Employee') {
-            abort(403, 'Unauthorized access.');
-        }
-        return view('dashboards.employee_dashboard');
-    })->name('employee.dashboard');
+Route::get('/employee/dashboard', function () {
+    if (Auth::user()->role !== 'Employee') {
+        abort(403, 'Unauthorized access.');
+    }
+    return view('dashboards.employee_dashboard');
+})->name('employee.dashboard');
+
+Route::get('/hr/dashboard', function () {
+    if (Auth::user()->role !== 'HR') {
+        abort(403, 'Unauthorized access.');
+    }
+    return view('dashboards.hr_dashboard');
+})->name('hr.dashboard');
 
     /*
     |--------------------------------------------------------------------------

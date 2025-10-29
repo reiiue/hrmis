@@ -8,7 +8,6 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="{{ asset('css/dashboard.css') }}" rel="stylesheet">
     <link href="{{ asset('css/sidebar.css') }}" rel="stylesheet">
-
 </head>
 <body>
     <div class="dashboard-container">
@@ -18,17 +17,37 @@
         <!-- Main Content -->
         <main class="main-content">
             <!-- Header -->
-            <header class="header">
+            <header class="header d-flex justify-content-between align-items-center">
                 <h1>Employee Dashboard</h1>
-                <div class="user-profile">
-                    <div class="user-avatar">
-                        {{ strtoupper(
-                            substr(explode(' ', Auth::user()->username)[0], 0, 1) .
-                            (isset(explode(' ', Auth::user()->username)[1]) ? substr(explode(' ', Auth::user()->username)[1], 0, 1) : '')
-                        ) }}
-                    </div>
-                    <span>{{ Auth::user()->username }}!</span>
-                    <i class="fas fa-chevron-down"></i>
+
+                <!-- User Profile Dropdown -->
+                <div class="dropdown">
+                    <button class="btn btn-light d-flex align-items-center gap-2 dropdown-toggle" 
+                            type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="user-avatar">
+                            {{ strtoupper(
+                                substr(explode(' ', Auth::user()->username)[0], 0, 1) .
+                                (isset(explode(' ', Auth::user()->username)[1]) ? substr(explode(' ', Auth::user()->username)[1], 0, 1) : '')
+                            ) }}
+                        </div>
+                        <span>{{ Auth::user()->username }}</span>
+                    </button>
+
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li>
+                            <a class="dropdown-item" href="#">
+                                <i class="fas fa-user me-2"></i> Profile
+                            </a>
+                        </li>
+                        <li>
+                            <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                                @csrf
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="fas fa-sign-out-alt me-2"></i> Logout
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
                 </div>
             </header>
 
@@ -43,7 +62,6 @@
                 </div>
             </div>
 
-
             <!-- Stats Grid -->
             <div class="stats-grid">
                 <div class="stat-card">
@@ -57,7 +75,7 @@
                     </div>
                 </div>
 
-                            <div class="stat-card">
+                <div class="stat-card">
                     <div class="stat-icon purple">
                         <i class="fas fa-peso-sign"></i>
                     </div>
@@ -68,7 +86,7 @@
                     </div>
                 </div>
 
-                                <div class="stat-card">
+                <div class="stat-card">
                     <div class="stat-icon yellow">
                         <i class="fas fa-umbrella-beach"></i>
                     </div>
@@ -80,7 +98,7 @@
                 </div>
             </div>
 
-                        <!-- Content Grid -->
+            <!-- Content Grid -->
             <div class="content-grid">
                 <!-- Time Tracking -->
                 <div class="card">
@@ -91,7 +109,7 @@
                         <span>Absent</span>
                     </div>
 
-                     <div class="time-tracking-grid">
+                    <div class="time-tracking-grid">
                         <div class="time-item">
                             <div class="time-label">Check in</div>
                             <div class="time-value">--:-- --</div>
@@ -103,18 +121,18 @@
                             <div class="time-status">Pending</div>
                         </div>
                     </div>
-                        <button class="check-in-btn">
+                    <button class="check-in-btn">
                         <i class="fas fa-sign-in-alt"></i>
                         Check In Now
                     </button>
-                    
+
                     <div class="hours-summary">
                         <span>Today's Hours</span>
                         <strong>0h 0m</strong>
                     </div>
                 </div>
 
-                                <!-- Upcoming Events -->
+                <!-- Upcoming Events -->
                 <div class="card">
                     <h3><i class="fas fa-calendar-alt"></i> Upcoming Events</h3>
                     <div class="no-events">
@@ -157,8 +175,7 @@
         </main>
     </div>
 
-        </main>
-            
-
+    <!-- Bootstrap JS (for dropdown functionality) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

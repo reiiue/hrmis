@@ -11,51 +11,51 @@ class AuthController extends Controller
 {
     public function showLogin($role = null)
     {
-        // Optional: validate only expected roles
-        if ($role !== null && !in_array(strtolower($role), ['admin', 'employee'])) {
+        // Allow admin, employee, and hr
+        if ($role !== null && !in_array(strtolower($role), ['admin', 'employee', 'hr'])) {
             abort(404);
         }
 
         return view('auth.login', ['role' => $role]);
     }
 
-    public function login(Request $request)
-    {
-        $request->validate([
-            'username' => 'required',
-            'password' => 'required',
-            'role' => 'nullable|string' // ✅ added for role check
-        ]);
 
-        $user = User::where('username', $request->username)->first();
+public function login(Request $request)
+{
+    $request->validate([
+        'username' => 'required',
+        'password' => 'required',
+        'role' => 'nullable|string'
+    ]);
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return back()->withErrors(['username' => 'Invalid credentials.']);
-        }
+    $user = User::where('username', $request->username)->first();
 
-        // ✅ Check if account is active
-        if ($user->status !== 'Active') {
-            return back()->withErrors(['username' => 'Account is ' . $user->status]);
-        }
-
-        // ✅ Verify role if selected from homepage
-        if ($request->filled('role') && strtolower($user->role) !== strtolower($request->role)) {
-            return back()->withErrors(['username' => 'You are not authorized to log in as ' . ucfirst($request->role) . '.']);
-        }
-
-        // ✅ Log in user
-        Auth::login($user);
-        $request->session()->regenerate();
-
-        // ✅ Redirect based on role
-        if ($user->role === 'Admin') {
-            return redirect()->route('admin.dashboard')->with('success', 'Welcome, Admin!');
-        } elseif ($user->role === 'Employee') {
-            return redirect()->route('employee.dashboard')->with('success', 'Welcome, Employee!');
-        }
-        // fallback
-        return redirect()->route('dashboard');
+    if (!$user || !Hash::check($request->password, $user->password)) {
+        return back()->withErrors(['username' => 'Invalid credentials.']);
     }
+
+    if ($user->status !== 'Active') {
+        return back()->withErrors(['username' => 'Account is ' . $user->status]);
+    }
+
+    if ($request->filled('role') && strtolower($user->role) !== strtolower($request->role)) {
+        return back()->withErrors(['username' => 'You are not authorized to log in as ' . ucfirst($request->role) . '.']);
+    }
+
+    Auth::login($user);
+    $request->session()->regenerate();
+
+    // Redirect based on role
+    if ($user->role === 'Admin') {
+        return redirect()->route('admin.dashboard')->with('success', 'Welcome, Admin!');
+    } elseif ($user->role === 'Employee') {
+        return redirect()->route('employee.dashboard')->with('success', 'Welcome, Employee!');
+    } elseif ($user->role === 'HR') {
+        return redirect()->route('hr.dashboard')->with('success', 'Welcome, HR!');
+    }
+
+    return redirect()->route('home');
+}
 
 
     public function showRegister()
@@ -80,23 +80,23 @@ class AuthController extends Controller
         Auth::login($user);
         $request->session()->regenerate(); // ✅ Regenerate after login
 
-        return redirect()->route('dashboard');
+        return redirect()->route('login');
     }
 
     public function logout(Request $request)
     {
         Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
-        $request->session()->invalidate();     // ✅ Invalidate session
-        $request->session()->regenerateToken(); // ✅ Regenerate CSRF token
-
-        return redirect()->route('login');
+        // Redirect to the selection page
+        return redirect()->route('home');
     }
 
-    public function index()
-{
-    return view('pds.index');
-}
+        public function index()
+    {
+        return view('pds.index');
+    }
 
 
 
