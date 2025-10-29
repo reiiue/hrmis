@@ -651,9 +651,14 @@ class PDSController extends Controller
             ]
         );
 
+        $user->pds()->updateOrCreate(
+            ['user_id' => $user->id],
+            [
+                'status' => 'in_progress',  // or 'submitted'
+                'last_updated' => now(),
+            ]
+        );
 
-
-    
 
         return redirect()->route('pds.index')->with('success', 'Personal Information updated successfully.');
     }

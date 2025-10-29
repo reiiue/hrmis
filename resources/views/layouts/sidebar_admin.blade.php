@@ -27,10 +27,11 @@
             SALN
         </a>
 
-        <a href="#" class="nav-item">
-            <i class="fas fa-users"></i>
-            Employee Management
+        <a href="{{ route('admin.employee.records') }}" class="nav-item nav-link">
+            <i class="fas fa-users "></i>
+            Employee Records
         </a>
+
 
         <a href="#" class="nav-item">
             <i class="fas fa-user-shield"></i>

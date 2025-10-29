@@ -79,6 +79,11 @@ public function store(Request $request)
         'suffix' => $request->suffix,
     ]);
 
+     // Automatically create PDS
+    $user->pds()->create([
+        'status' => 'not_started'
+    ]);
+
     return redirect()
         ->route('admin.users.index')
         ->with('success', 'User created successfully.');

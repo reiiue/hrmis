@@ -9,6 +9,8 @@ class PDS extends Model
 {
     use HasFactory;
 
+    protected $table = 'pds'; // <-- explicitly set the table name
+
     protected $fillable = [
         'user_id',
         'status',

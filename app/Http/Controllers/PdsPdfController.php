@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\PersonalInformation;
 use App\Models\GovernmentId;
+use App\Models\User;
 use Carbon\Carbon;
 
 class PdsPdfController extends Controller
@@ -47,13 +48,14 @@ class PdsPdfController extends Controller
         }
     }
 
-    public function download()
-    {
-        $filePath = public_path('pdfs/pds.pdf'); // Path to PDS PDF
-        $pdf = new Fpdi();
+public function download($userId)
+{
+    $filePath = public_path('pdfs/pds.pdf'); // Path to PDS PDF
+    $pdf = new Fpdi();
 
-        $user = Auth::user();
-        $personalInfo = PersonalInformation::with([
+    // Fetch the employee by ID
+    $user = User::with(['personalInformation' => function($q) {
+        $q->with([
             'dualCitizenshipCountry',
             'permanentAddress',
             'residentialAddress',
@@ -70,12 +72,17 @@ class PdsPdfController extends Controller
             'legalCase',
             'employmentSeparation',
             'politicalActivity',
-        ])->where('user_id', $user->id)->first();
+            'immigrationStatus',
+            'specialStatus',
+        ]);
+    }])->findOrFail($userId);
 
-        // If there's no personal information, abort early
-        if (!$personalInfo) {
-            return abort(404, 'PDS not found');
-        }
+    $personalInfo = $user->personalInformation;
+
+    // If the employee has no PDS info
+    if (!$personalInfo) {
+        return abort(404, 'PDS not found');
+    }
 
         // -----------------------------
         // Personal Information
@@ -615,6 +622,6 @@ class PdsPdfController extends Controller
 
         return response($pdf->Output('S'))
             ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'inline; filename="full_pds.pdf"');
+            ->header('Content-Disposition', 'inline; filename="pds_'.$user->id.'.pdf"');
     } 
 }

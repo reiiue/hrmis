@@ -12,6 +12,7 @@ use App\Models\TotalCosts;
 use App\Models\BusinessInterest;
 use App\Models\RelativeInGovService;
 use App\Models\Agency;
+use App\Models\User;
 
 class SalnPdfController extends Controller
 {
@@ -29,11 +30,20 @@ class SalnPdfController extends Controller
     /**
      * Download SALN as a PDF file.
      */
-    public function download()
+    public function download($userId)
     {
-        $user = Auth::user();
-        $personalInfo = PersonalInformation::where('user_id', $user->id)->firstOrFail();
+        // Instead of Auth::user(), fetch the user by ID
+        $user = User::with('personalInformation')->findOrFail($userId);
+        $personalInfo = $user->personalInformation;
+
+        if (!$personalInfo) {
+            return abort(404, 'SALN not found for this employee.');
+        }
+
         $reportingYear = now()->year;
+
+        // ... rest of your code remains unchanged ...
+
 
         // ✅ Fetch related data
         $real_properties = $personalInfo->assetsRealProperties()->where('reporting_year', $reportingYear)->get();

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class SALN extends Model
 {
     use HasFactory;
-
+    protected $table = 'saln';
     protected $fillable = [
         'user_id',
         'status',
