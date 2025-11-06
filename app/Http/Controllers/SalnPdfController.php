@@ -30,9 +30,20 @@ class SalnPdfController extends Controller
     /**
      * Download SALN as a PDF file.
      */
-    public function download($userId)
+    public function download($userId = null)
     {
-        // Instead of Auth::user(), fetch the user by ID
+        $authUser = auth()->user();
+
+        // Employees can only download their own SALN
+        if ($authUser->role === 'Employee') {
+            $userId = $authUser->id;
+        } 
+        // Admins must provide a user ID
+        elseif ($authUser->role === 'Admin' && $userId === null) {
+            return abort(400, 'User ID is required for Admin.');
+        }
+
+        // Fetch user and related personal info
         $user = User::with('personalInformation')->findOrFail($userId);
         $personalInfo = $user->personalInformation;
 
@@ -40,9 +51,7 @@ class SalnPdfController extends Controller
             return abort(404, 'SALN not found for this employee.');
         }
 
-        $reportingYear = now()->year;
-
-        // ... rest of your code remains unchanged ...
+        $reportingYear = now()->year; // or get a specific year if needed
 
 
         // ✅ Fetch related data

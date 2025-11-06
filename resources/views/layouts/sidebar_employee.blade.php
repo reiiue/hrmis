@@ -15,7 +15,7 @@
             Dashboard
         </a>
 
-        <a href="#" class="nav-item">
+        <!-- <a href="#" class="nav-item">
             <i class="fas fa-calendar-check"></i>
             Attendance
         </a>
@@ -33,7 +33,7 @@
         <a href="#" class="nav-item">
             <i class="fas fa-money-bill-wave"></i>
             Payroll
-        </a>
+        </a> -->
 
         <a href="{{ route('pds.index') }}" 
            class="nav-item {{ request()->routeIs('pds.*') ? 'active' : '' }}">

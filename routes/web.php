@@ -9,6 +9,7 @@ use App\Http\Controllers\SALNController;
 use App\Http\Controllers\SalnPdfController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\EmployeeRecordsController;
+use App\Http\Controllers\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,8 +19,8 @@ use App\Http\Controllers\Admin\EmployeeRecordsController;
 | The homepage lets users choose between Employee and Admin.
 */
 Route::get('/', function () {
-    return view('auth.selection');
-})->name('home');
+    return redirect()->route('login');
+});
 
 // Authentication
 Route::get('/login/{role?}', [AuthController::class, 'showLogin'])->name('login');
@@ -41,26 +42,18 @@ Route::middleware(['auth'])->group(function () {
 |--------------------------------------------------------------------------
 | Each role gets a separate dashboard.
 */
-Route::get('/admin/dashboard', function () {
-    if (Auth::user()->role !== 'Admin') {
-        abort(403, 'Unauthorized access.');
-    }
-    return view('dashboards.admin_dashboard');
-})->name('admin.dashboard');
+Route::get('/admin/dashboard', [DashboardController::class, 'admin'])
+    ->middleware(['auth', 'role:Admin'])
+    ->name('admin.dashboard');
 
-Route::get('/employee/dashboard', function () {
-    if (Auth::user()->role !== 'Employee') {
-        abort(403, 'Unauthorized access.');
-    }
-    return view('dashboards.employee_dashboard');
-})->name('employee.dashboard');
+Route::get('/hr/dashboard', [DashboardController::class, 'hr'])
+    ->middleware(['auth', 'role:HR'])
+    ->name('hr.dashboard');
 
-Route::get('/hr/dashboard', function () {
-    if (Auth::user()->role !== 'HR') {
-        abort(403, 'Unauthorized access.');
-    }
-    return view('dashboards.hr_dashboard');
-})->name('hr.dashboard');
+Route::get('/employee/dashboard', [DashboardController::class, 'employee'])
+    ->middleware(['auth', 'role:Employee'])
+    ->name('employee.dashboard');
+
 
     /*
     |--------------------------------------------------------------------------
@@ -70,7 +63,11 @@ Route::get('/hr/dashboard', function () {
     Route::prefix('pds')->name('pds.')->group(function () {
         Route::get('/', [PDSController::class, 'index'])->name('index');
         Route::post('/update', [PDSController::class, 'update'])->name('update');
-        Route::get('/download-pdf', [PdsPdfController::class, 'download'])->name('pdf');
+        // Employee/Admin PDS download route
+        Route::get('/pds/download-pdf/{userId?}', [PdsPdfController::class, 'download'])->name('pds.pdf');
+
+        Route::post('/submit', [PDSController::class, 'submitPDS'])->name('submit');
+
     });
 
     /*

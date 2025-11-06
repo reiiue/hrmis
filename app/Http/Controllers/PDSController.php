@@ -23,6 +23,10 @@ use App\Models\PoliticalActivity; // <-- add this import at the top
 use App\Models\ImmigrationStatus;
 use App\Models\SpecialStatus;
 use App\Models\SpecialSkillsHobby;
+use App\Models\Submission;
+use setasign\Fpdi\Fpdi;
+use Illuminate\Support\Facades\DB;
+
 
 
 
@@ -189,7 +193,6 @@ class PDSController extends Controller
             'training_title.*' => 'nullable|string|max:255',
             'inclusive_date_from.*' => 'nullable|date',
             'inclusive_date_to.*' => 'nullable|date',
-            'number_of_hours.*' => 'nullable|integer|min:0',
             'type_of_ld.*' => 'nullable|string|max:255',
             'conducted_by.*' => 'nullable|string|max:255',
 
@@ -209,7 +212,7 @@ class PDSController extends Controller
 
             // Employment Separation
             'has_been_separated' => 'nullable|in:yes,no',
-            'details' => 'nullable|string',
+            'separation_details' => 'nullable|string',
 
             //Political Activities
             'has_been_candidate' => 'nullable|in:yes,no',
@@ -607,7 +610,7 @@ class PDSController extends Controller
             ['personal_information_id' => $personalInformation->id],
             [
                 'has_been_separated' => $request->input('has_been_separated') ?? 'no',
-                'details'            => $request->input('details') ?? null,
+                'details'            => $request->input('separation_details') ?? null,
             ]
         );
 
@@ -662,4 +665,48 @@ class PDSController extends Controller
 
         return redirect()->route('pds.index')->with('success', 'Personal Information updated successfully.');
     }
+public function submitPDS(Request $request)
+{
+    $request->validate([
+        'recipients' => 'required|array|min:1',
+        'recipients.*' => 'exists:users,id',
+        'document_type' => 'required|in:PDS,SALN',
+    ]);
+
+    $sender = Auth::user();
+
+    try {
+        DB::transaction(function() use ($request, $sender) {
+            // create submission records using attribute assignment to avoid mass-assignment issues
+            foreach ($request->recipients as $recipientId) {
+                $submission = new Submission();
+                $submission->sender_id = $sender->id;
+                $submission->recipient_id = $recipientId;
+                $submission->document_type = $request->document_type;
+                $submission->status = 'submitted';
+                $submission->save();
+            }
+
+            // mark the user's PDS as submitted
+            \App\Models\PDS::updateOrCreate(
+                ['user_id' => $sender->id],
+                [
+                    'status' => 'submitted',
+                    'last_action_by' => $sender->id,
+                    'last_action_at' => now(),
+                ]
+            );
+        });
+
+        return redirect()->back()->with('success', 'PDS submitted successfully!');
+    } catch (\Exception $e) {
+        // log the error and return an informative message
+        logger()->error('Failed to submit PDS', ['error' => $e->getMessage(), 'stack' => $e->getTraceAsString()]);
+
+        return redirect()->back()->with('error', 'Failed to submit PDS: ' . $e->getMessage());
+    }
+}
+
+
+
 }

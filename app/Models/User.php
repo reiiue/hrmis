@@ -32,4 +32,16 @@ public function saln()
     return $this->hasOne(SALN::class);
 }
 
+// Employee: submissions they sent
+public function submissionsSent()
+{
+    return $this->hasMany(Submission::class, 'sender_id');
+}
+
+// HR/Admin: submissions they received
+public function submissionsReceived()
+{
+    return $this->hasMany(Submission::class, 'recipient_id');
+}
+
 }

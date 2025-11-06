@@ -32,7 +32,7 @@
             Employee Records
         </a>
 
-
+<!-- 
         <a href="#" class="nav-item">
             <i class="fas fa-user-shield"></i>
             HR Management
@@ -66,13 +66,13 @@
         <a href="#" class="nav-item">
             <i class="fas fa-database"></i>
             Data Management
-        </a>
+        </a> -->
 
         <a href="{{ route('admin.users.index') }}" class="nav-item">
             <i class="fas fa-user-cog"></i>
             User Accounts
         </a>
-
+<!-- 
         <a href="#" class="nav-item">
             <i class="fas fa-chart-line"></i>
             Analytics
@@ -87,7 +87,7 @@
             <i class="fas fa-question-circle"></i>
             Help & Support
         </a>
-    </nav>
+    </nav> -->
 
     <button class="collapse-btn">
         <i class="fas fa-chevron-left"></i>

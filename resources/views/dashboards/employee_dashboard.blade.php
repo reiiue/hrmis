@@ -10,6 +10,7 @@
     <link href="{{ asset('css/sidebar.css') }}" rel="stylesheet">
 </head>
 <body>
+@auth
     <div class="dashboard-container">
 
         @include('layouts.sidebar_employee')
@@ -26,11 +27,15 @@
                             type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                         <div class="user-avatar">
                             {{ strtoupper(
-                                substr(explode(' ', Auth::user()->username)[0], 0, 1) .
-                                (isset(explode(' ', Auth::user()->username)[1]) ? substr(explode(' ', Auth::user()->username)[1], 0, 1) : '')
+                                substr(Auth::user()->personalInformation->first_name, 0, 1) .
+                                substr(Auth::user()->personalInformation->last_name, 0, 1)
                             ) }}
                         </div>
-                        <span>{{ Auth::user()->username }}</span>
+                        <span>
+                            {{ Auth::user()->personalInformation 
+                                ? Auth::user()->personalInformation->first_name . ' ' . Auth::user()->personalInformation->last_name 
+                                : Auth::user()->username }}
+                        </span>
                     </button>
 
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
@@ -54,7 +59,12 @@
             <!-- Welcome Banner -->
             <div class="welcome-banner">
                 <div class="welcome-content">
-                    <h2>Welcome back, {{ Auth::user()->username }}!</h2>
+                    <h2>
+                        Welcome back, 
+                        {{ Auth::user()->personalInformation 
+                            ? Auth::user()->personalInformation->first_name . ' ' . Auth::user()->personalInformation->last_name 
+                            : Auth::user()->username }}!
+                    </h2>
                     <p>Here's what's happening today.</p>
                 </div>
                 <div class="welcome-date">
@@ -177,5 +187,8 @@
 
     <!-- Bootstrap JS (for dropdown functionality) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+@else
+    <script>window.location.href = "{{ route('login', 'employee') }}";</script>
+@endauth
 </body>
 </html>

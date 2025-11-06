@@ -17,11 +17,11 @@
     </td>
 
     <td colspan="20" class="align-top" style="font-size:11px;">
-        <label>If YES, give details:</label>
-        <textarea id="employment-separation-details" name="details" 
-                  class="form-control form-control-sm mt-1" rows="2"
-                  {{ old('has_been_separated', $employmentSeparation->has_been_separated ?? '') !== 'yes' ? 'disabled' : '' }}
-        >{{ old('details', $employmentSeparation->details ?? '') }}</textarea>
+    <label>If YES, give details:</label>
+    <textarea id="employment-separation-details" name="separation_details" 
+          class="form-control form-control-sm mt-1" rows="2"
+          {{ old('has_been_separated', $employmentSeparation->has_been_separated ?? '') !== 'yes' ? 'disabled' : '' }}
+    >{{ old('separation_details', $employmentSeparation->details ?? '') }}</textarea>
     </td>
 </tr>
 

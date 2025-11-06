@@ -48,9 +48,19 @@ class PdsPdfController extends Controller
         }
     }
 
-public function download($userId)
+public function download($userId = null)
 {
-    $filePath = public_path('pdfs/pds.pdf'); // Path to PDS PDF
+    $user = auth()->user();
+
+    // Employees can only download their own PDS
+    if ($user->role === 'Employee') {
+        $userId = $user->id;
+    } 
+    // Admins can download any user’s PDS
+    elseif ($user->role === 'Admin' && $userId === null) {
+        return abort(400, 'User ID is required for Admin.');
+    }
+    $filePath = public_path('pdfs/pds_clean.pdf'); // Path to PDS PDF
     $pdf = new Fpdi();
 
     // Fetch the employee by ID
@@ -79,7 +89,6 @@ public function download($userId)
 
     $personalInfo = $user->personalInformation;
 
-    // If the employee has no PDS info
     if (!$personalInfo) {
         return abort(404, 'PDS not found');
     }
@@ -194,9 +203,24 @@ public function download($userId)
         $pageCount = $pdf->setSourceFile($filePath);
 
         for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
-            $pdf->AddPage();
+
+
+            $pdf->AddPage('P', [215.9, 330.2]);
             $templateId = $pdf->importPage($pageNo);
-            $pdf->useTemplate($templateId);
+                // 👇 Apply different position per page
+
+            if ($pageNo === 2) {
+                // Page 2 custom placement
+                $pdf->useTemplate($templateId, -22, 0, 280 - 20); 
+                // 5 mm from left, 15 mm from top, width = 210 mm
+            } else {
+                // Page 1 (and others) use your preferred SALN-style layout
+                $pdf->useTemplate($templateId, -15, 4, 267 - 20); 
+                // -15 mm left offset, -2 mm top offset, width = 247 mm
+            }
+
+
+            
 
             if ($pageNo === 1) {
                 $pdf->SetFont('Arial', '', 8);

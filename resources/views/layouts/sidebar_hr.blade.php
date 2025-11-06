@@ -9,7 +9,8 @@
     </div>
 
     <nav class="nav-menu">
-        <a href="#" class="nav-item active">
+        <a href="{{ route('hr.dashboard') }}" 
+           class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
             <i class="fas fa-home"></i>
             Dashboard
         </a>
@@ -25,7 +26,7 @@
             <i class="fas fa-balance-scale"></i>
             SALN
         </a>
-
+<!-- 
         <a href="#" class="nav-item">
             <i class="fas fa-users"></i>
             Employee Management
@@ -85,7 +86,7 @@
         <a href="#" class="nav-item">
             <i class="fas fa-cog"></i>
             Settings
-        </a>
+        </a> -->
     </nav>
 
     <button class="collapse-btn">

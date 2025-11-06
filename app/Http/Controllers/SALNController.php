@@ -503,14 +503,15 @@ if ($request->boolean('no_relative_in_gov_service')) {
             $certificationData
         );
 
-        
-        $user->pds()->updateOrCreate(
+
+        $user->saln()->updateOrCreate(
             ['user_id' => $user->id],
             [
-                'status' => 'in_progress',  // or 'submitted'
+                'status' => 'in_progress',  
                 'last_updated' => now(),
             ]
         );
+        
 
 
 return redirect()->route('saln.index')->with('success', 'SALN saved successfully!');

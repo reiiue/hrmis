@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', ucfirst($role ?? 'User') . ' Login')
+@section('title', 'Login')
 
 @section('content')
-    <h2>{{ ucfirst($role ?? 'User') }} Login</h2>
+    <h2>Login</h2>
 
     @if ($errors->any())
         <div style="color: red; margin-bottom: 10px;">
@@ -13,9 +13,6 @@
 
     <form method="POST" action="{{ route('login.submit') }}">
         @csrf
-
-        {{-- ✅ Hidden role input (e.g., admin, employee, hr) --}}
-        <input type="hidden" name="role" value="{{ $role }}">
 
         <label>
             Email:
@@ -30,12 +27,4 @@
         <button type="submit">Login</button>
     </form>
 
-    <p style="margin-top: 15px;">
-        Don’t have an account?
-        <a href="{{ route('register') }}">Register</a>
-    </p>
-
-    @if ($role)
-        <p><a href="{{ route('home') }}">← Back to role selection</a></p>
-    @endif
 @endsection

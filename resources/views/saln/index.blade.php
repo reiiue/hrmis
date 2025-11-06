@@ -37,7 +37,7 @@
                 @include('saln.liabilities')
                 @include('saln.business_interests')
                 @include('saln.relatives_in_gov_service')
-                @include('saln.certification_and_oath')
+
 
                 {{-- Save and Download Buttons --}}
             

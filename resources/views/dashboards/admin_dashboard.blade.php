@@ -24,27 +24,51 @@
         <main class="main-content">
             <!-- Header -->
             <header class="header d-flex justify-content-between align-items-center">
-                <h1 class="mb-0">Admin Dashboard</h1>
-                <div class="user-profile d-flex align-items-center gap-2">
-                    <div class="user-avatar">
-                        {{ strtoupper(substr(explode('@', Auth::user()->email)[0], 0, 2)) }}
-                    </div>
-                    <span>{{ Auth::user()->email }}</span>
+                <h1>Admin Dashboard</h1>
 
-                    <!-- Logout Button -->
-                    <form method="POST" action="{{ route('logout') }}" class="d-inline">
-                        @csrf
-                        <button type="submit" class="btn btn-danger btn-sm ms-3">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </button>
-                    </form>
+                <!-- User Profile Dropdown -->
+                <div class="dropdown">
+                    <button class="btn btn-light d-flex align-items-center gap-2 dropdown-toggle" 
+                            type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="user-avatar">
+                            {{ strtoupper(
+                                substr(Auth::user()->personalInformation->first_name, 0, 1) .
+                                substr(Auth::user()->personalInformation->last_name, 0, 1)
+                            ) }}
+                        </div>
+                        <span>
+                            {{ Auth::user()->personalInformation 
+                                ? Auth::user()->personalInformation->first_name . ' ' . Auth::user()->personalInformation->last_name 
+                                : Auth::user()->username }}
+                        </span>
+                    </button>
+
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li>
+                            <a class="dropdown-item" href="#">
+                                <i class="fas fa-user me-2"></i> Profile
+                            </a>
+                        </li>
+                        <li>
+                            <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                                @csrf
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="fas fa-sign-out-alt me-2"></i> Logout
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
                 </div>
             </header>
 
             <!-- Welcome Banner -->
             <div class="welcome-banner mt-3">
                 <div class="welcome-content">
-                    <h2>Welcome back, {{ Auth::user()->email }}!</h2>
+                    <h2>
+                        Welcome back, 
+                        {{ Auth::user()->personalInformation ? Auth::user()->personalInformation->first_name . ' ' . Auth::user()->personalInformation->last_name : Auth::user()->email }}!
+                    </h2>
+
                     <p>Here's what's happening today.</p>
                 </div>
                 <div class="welcome-date">
@@ -123,14 +147,31 @@
                     </div>
                 </div>
 
-                <!-- Upcoming Events -->
+                <!-- Recent Submissions Card (preview only) -->
                 <div class="card">
-                    <h3><i class="fas fa-calendar-alt"></i> Upcoming Events</h3>
-                    <div class="no-events">
-                        No upcoming events
-                    </div>
-                    <a href="#" class="view-all-link">View All Events ></a>
+                    <h3><i class="fas fa-inbox"></i> Recent Submissions</h3>
+
+                    @if($submissions->isEmpty())
+                        <div class="no-events">
+                            No submissions yet
+                        </div>
+                    @else
+                        <ul class="list-group list-group-flush">
+                            @foreach($submissions->take(5) as $submission) {{-- only 5 latest --}}
+                                <li class="list-group-item">
+                                    <strong>{{ $submission->sender->personalInformation->first_name }} {{ $submission->sender->personalInformation->last_name }}</strong>
+                                    submitted <em>{{ $submission->document_type }}</em> 
+                                    @if($submission->recipient)
+                                        to <strong>{{ $submission->recipient->personalInformation->first_name }} {{ $submission->recipient->personalInformation->last_name }}</strong>
+                                    @endif
+                                    <span class="text-muted d-block small">{{ $submission->created_at->format('M d, Y H:i') }}</span>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
                 </div>
+
+
             </div>
 
             <!-- Quick Actions -->
@@ -165,8 +206,11 @@
             </div>
         </main>
     </div>
+    <!-- Bootstrap JS (for dropdown functionality) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 @else
-    <script>window.location.href = "{{ route('login', 'admin') }}";</script>
+    <script>window.location.href = "{{ route('login', 'employee') }}";</script>
 @endauth
+
 </body>
 </html>
