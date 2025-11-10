@@ -71,16 +71,14 @@
     </div>
 
     {{-- Subtotal on the right --}}
-    <strong>TOTAL LIABILITIES: ₱<span id="liabilitiesSubtotal">0.00</span></strong>
+    <strong>TOTAL LIABILITIES: ₱<span id="liabilitiesSubtotal" class="underline-value">0.00</span></strong>
 </div>
 
 {{-- 🔽 Net Worth (Assets – Liabilities) --}}
 <div class="d-flex justify-content-end me-4 mb-4">
-    <strong>NET WORTH: ₱
-        <span id="netWorthDisplay">
-            {{ isset($total_costs) ? number_format($total_costs->net_worth, 2) : '0.00' }}
-        </span>
-    </strong>
+    <strong>NET WORTH: ₱<span id="netWorthDisplay" class="underline-value">
+        {{ isset($total_costs) ? number_format($total_costs->net_worth, 2) : '0.00' }}
+    </span></strong>
 </div>
 
 {{-- Double Line Separator --}}

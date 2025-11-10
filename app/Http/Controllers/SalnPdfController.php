@@ -32,15 +32,14 @@ class SalnPdfController extends Controller
      */
     public function download($userId = null)
     {
-        $authUser = auth()->user();
+        $user = auth()->user();
 
         // Employees can only download their own SALN
-        if ($authUser->role === 'Employee') {
-            $userId = $authUser->id;
+        if ($user->role === 'Employee') {
+            $userId = $user->id;
         } 
-        // Admins must provide a user ID
-        elseif ($authUser->role === 'Admin' && $userId === null) {
-            return abort(400, 'User ID is required for Admin.');
+        elseif ($user->role === 'Admin' && $userId === null) {
+            $userId = $user->id; // Default to Admin's own PDS
         }
 
         // Fetch user and related personal info

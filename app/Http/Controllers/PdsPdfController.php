@@ -56,9 +56,8 @@ public function download($userId = null)
     if ($user->role === 'Employee') {
         $userId = $user->id;
     } 
-    // Admins can download any user’s PDS
     elseif ($user->role === 'Admin' && $userId === null) {
-        return abort(400, 'User ID is required for Admin.');
+        $userId = $user->id; // Default to Admin's own PDS
     }
     $filePath = public_path('pdfs/pds_clean.pdf'); // Path to PDS PDF
     $pdf = new Fpdi();

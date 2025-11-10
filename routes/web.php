@@ -105,4 +105,11 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     // Admin view/download SALN of any employee
     Route::get('/admin/employee/saln/{userId}', [SalnPdfController::class, 'download'])
         ->name('admin.employee.saln.show');
+
+    Route::post('/employee/{id}/pds/action', [EmployeeRecordsController::class, 'pdsAction'])
+        ->name('admin.employee.records.pds-action');
+
+    Route::post('/employee/{id}/saln/action', [EmployeeRecordsController::class, 'salnAction'])
+        ->name('admin.employee.records.saln-action');
+
 });

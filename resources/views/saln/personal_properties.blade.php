@@ -71,16 +71,14 @@
     </div>
 
     {{-- Subtotal on the right --}}
-    <strong>Subtotal: ₱<span id="personalAcquisitionCostSubtotal">0.00</span></strong>
+    <strong>Subtotal: ₱<span id="personalAcquisitionCostSubtotal" class="underline-value">0.00</span></strong>
 </div>
 
 {{-- 🔽 Total Assets from total_costs --}}
 <div class="d-flex justify-content-end me-4 mb-4">
-    <strong>TOTAL ASSETS (a+b): ₱
-        <span id="totalAssetsDisplay">
-            {{ isset($total_costs) ? number_format($total_costs->total_assets_costs, 2) : '0.00' }}
-        </span>
-    </strong>
+    <strong>TOTAL ASSETS (a+b): ₱<span id="totalAssetsDisplay" class="underline-value">
+        {{ isset($total_costs) ? number_format($total_costs->total_assets_costs, 2) : '0.00' }}
+    </span></strong>
 </div>
 
 

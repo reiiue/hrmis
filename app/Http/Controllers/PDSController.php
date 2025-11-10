@@ -664,8 +664,7 @@ class PDSController extends Controller
 
 
         return redirect()->route('pds.index')->with('success', 'Personal Information updated successfully.');
-    }
-public function submitPDS(Request $request)
+    }public function submitPDS(Request $request)
 {
     $request->validate([
         'recipients' => 'required|array|min:1',
@@ -677,17 +676,15 @@ public function submitPDS(Request $request)
 
     try {
         DB::transaction(function() use ($request, $sender) {
-            // create submission records using attribute assignment to avoid mass-assignment issues
             foreach ($request->recipients as $recipientId) {
-                $submission = new Submission();
-                $submission->sender_id = $sender->id;
-                $submission->recipient_id = $recipientId;
-                $submission->document_type = $request->document_type;
-                $submission->status = 'submitted';
-                $submission->save();
+                Submission::create([
+                    'sender_id' => $sender->id,
+                    'recipient_id' => $recipientId,
+                    'document_type' => $request->document_type,
+                    'status' => 'submitted',
+                ]);
             }
 
-            // mark the user's PDS as submitted
             \App\Models\PDS::updateOrCreate(
                 ['user_id' => $sender->id],
                 [
@@ -699,13 +696,12 @@ public function submitPDS(Request $request)
         });
 
         return redirect()->back()->with('success', 'PDS submitted successfully!');
-    } catch (\Exception $e) {
-        // log the error and return an informative message
-        logger()->error('Failed to submit PDS', ['error' => $e->getMessage(), 'stack' => $e->getTraceAsString()]);
-
+    } catch (\Throwable $e) {
+        logger()->error('Failed to submit PDS', ['error' => $e->getMessage()]);
         return redirect()->back()->with('error', 'Failed to submit PDS: ' . $e->getMessage());
     }
 }
+
 
 
 

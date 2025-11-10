@@ -113,7 +113,7 @@
         <button type="button" class="btn btn-sm btn-success me-2" id="addRealBtn">+ Add</button>
         <button type="button" class="btn btn-sm btn-danger" id="removeRealBtn">- Remove</button>
     </div>
-    <strong>Subtotal: ₱<span id="acquisitionCostSubtotal">0.00</span></strong>
+    <strong >Subtotal: ₱<span id="acquisitionCostSubtotal" class="underline-value">0.00</span></strong>
 </div>
 
 {{-- 🔽 Hidden subtotal field (renamed to match personal properties script) --}}

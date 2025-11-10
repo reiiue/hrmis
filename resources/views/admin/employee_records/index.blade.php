@@ -4,24 +4,61 @@
 
 @section('content')
 <div class="container-fluid py-4">
-    <!-- Header Section -->
+    <!-- Header -->
     <div class="row mb-4 align-items-center">
         <div class="col-md-6">
             <h1 class="h3 fw-bold text-dark">Employee Records</h1>
         </div>
-        <div class="col-md-6 text-end d-flex justify-content-end gap-2">
-            <!-- Search Form -->
-            <form action="{{ route('admin.employee.records') }}" method="GET" class="d-flex" style="max-width: 350px;">
+        <div class="col-md-6 d-flex justify-content-end align-items-center gap-2">
+            <!-- Search input -->
+            <form action="{{ route('admin.employee.records') }}" method="GET" class="d-flex align-items-center gap-2">
+
+                <!-- Smaller Search Bar -->
                 <input type="text" name="search" value="{{ request('search') }}" 
-                       class="form-control me-2" placeholder="Search by name or position...">
-                <button type="submit" class="btn btn-outline-primary">
-                    <i class="bi bi-search"></i>
-                </button>
+                    class="form-control" placeholder="Search..." style="width: 280px;">
+
+                <!-- Filter dropdown button -->
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-funnel"></i> Filters
+                    </button>
+                    <div class="dropdown-menu p-3" aria-labelledby="filterDropdown" style="min-width: 220px;">
+                        <strong>PDS</strong>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="pds_status[]" value="filed" id="pds_filed"
+                                {{ is_array(request('pds_status')) && in_array('filed', request('pds_status')) ? 'checked' : '' }}>
+                            <label class="form-check-label" for="pds_filed">Filed</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="pds_status[]" value="not_filed" id="pds_not_filed"
+                                {{ is_array(request('pds_status')) && in_array('not_filed', request('pds_status')) ? 'checked' : '' }}>
+                            <label class="form-check-label" for="pds_not_filed">Not Filed</label>
+                        </div>
+
+                        <hr class="dropdown-divider">
+
+                        <strong>SALN</strong>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="saln_status[]" value="filed" id="saln_filed"
+                                {{ is_array(request('saln_status')) && in_array('filed', request('saln_status')) ? 'checked' : '' }}>
+                            <label class="form-check-label" for="saln_filed">Filed</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="saln_status[]" value="not_filed" id="saln_not_filed"
+                                {{ is_array(request('saln_status')) && in_array('not_filed', request('saln_status')) ? 'checked' : '' }}>
+                            <label class="form-check-label" for="saln_not_filed">Not Filed</label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-sm mt-2 w-100">Apply</button>
+                    </div>
+                </div>
             </form>
         </div>
+
+
     </div>
 
-    <!-- Alert Messages -->
+    <!-- Alert -->
     @if ($message = Session::get('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <i class="bi bi-check-circle"></i> {{ $message }}
@@ -29,7 +66,7 @@
         </div>
     @endif
 
-    <!-- Employees Table Card -->
+    <!-- Employees Table -->
     <div class="card custom-shadow border-0">
         <div class="card-header bg-white border-bottom">
             <h5 class="card-title mb-0 fw-semibold">All Employees</h5>
@@ -40,26 +77,20 @@
                     <table class="table table-hover mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th class="fw-bold text-muted">#</th>
-                                <th class="fw-bold text-muted">Employee Name</th>
-                                <th class="fw-bold text-muted">Position</th>
-                                <th class="fw-bold text-muted">PDS Status</th>
-                                <th class="fw-bold text-muted">SALN Status</th>
-                                <th class="fw-bold text-muted">Last Updated</th>
-                                <th class="fw-bold text-muted text-center">Actions</th>
+                                <th>#</th>
+                                <th>Employee Name</th>
+                                <th>Position</th>
+                                <th>PDS Status</th>
+                                <th>SALN Status</th>
+                                <th>Last Updated</th>
+                                <th class="text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($employees as $index => $employee)
                                 <tr class="fs-5">
-                                    <!-- Name -->
                                     <td>{{ $index + 1 }}</td>
-                                    <td>
-                                        {{ $employee->personalInformation->first_name ?? '' }} 
-                                        {{ $employee->personalInformation->last_name ?? '' }}
-                                    </td>
-
-                                    <!-- Position -->
+                                    <td>{{ $employee->personalInformation->first_name ?? '' }} {{ $employee->personalInformation->last_name ?? '' }}</td>
                                     <td>{{ $employee->personalInformation->position ?? '' }}</td>
 
                                     <!-- PDS Status -->
@@ -73,9 +104,8 @@
                                                 'approved'    => 'bg-success',
                                                 'rejected'    => 'bg-danger',
                                             ];
-                                            $pdsColor = $pdsColors[$pdsStatus] ?? 'bg-secondary';
                                         @endphp
-                                        <span class="badge {{ $pdsColor }}">
+                                        <span class="badge {{ $pdsColors[$pdsStatus] ?? 'bg-secondary' }}">
                                             {{ ucfirst(str_replace('_', ' ', $pdsStatus)) }}
                                         </span>
                                     </td>
@@ -90,33 +120,27 @@
                                                 'verified'  => 'bg-success',
                                                 'flagged'   => 'bg-danger',
                                             ];
-                                            $salnColor = $salnColors[$salnStatus] ?? 'bg-secondary';
                                         @endphp
-                                        <span class="badge {{ $salnColor }}">
+                                        <span class="badge {{ $salnColors[$salnStatus] ?? 'bg-secondary' }}">
                                             {{ ucfirst(str_replace('_', ' ', $salnStatus)) }}
                                         </span>
                                     </td>
 
-                                    <!-- Last Updated (PDS) -->
-                                    <td>
-                                        {{ $employee->pds ? $employee->pds->updated_at->format('Y-m-d') : 'N/A' }}
-                                    </td>
-
+                                    <td>{{ $employee->pds ? $employee->pds->updated_at->format('Y-m-d') : 'N/A' }}</td>
                                     <!-- Actions -->
-                                    <td>
+                                    <td class="text-center">
                                         <div class="d-flex justify-content-center gap-2">
-                                            <a href="{{ route('admin.employee.pds.show', $employee->id) }}" 
-                                            target="_blank"
-                                            class="btn btn-sm btn-outline-primary" 
-                                            title="View PDS">
-                                                <i class="bi bi-file-earmark-text me-1"></i> View PDS
-                                            </a>
-                                            <a href="{{ route('admin.employee.saln.show', $employee->id) }}" 
-                                            target="_blank"
-                                            class="btn btn-sm btn-outline-warning" 
-                                            title="View SALN">
-                                                <i class="bi bi-file-earmark-text-fill me-1"></i> View SALN
-                                            </a>
+                                            <button class="btn btn-sm btn-outline-primary view-pdf-btn" 
+                                                    data-id="{{ $employee->id }}" data-type="pds"
+                                                    {{ $employee->pds ? '' : 'disabled title=Not yet filed' }}>
+                                                <i class="bi bi-file-earmark-text me-1"></i> PDS
+                                            </button>
+
+                                            <button class="btn btn-sm btn-outline-warning view-pdf-btn" 
+                                                    data-id="{{ $employee->id }}" data-type="saln"
+                                                    {{ $employee->saln ? '' : 'disabled title=Not yet filed' }}>
+                                                <i class="bi bi-file-earmark-text-fill me-1"></i> SALN
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -124,47 +148,91 @@
                         </tbody>
                     </table>
                 </div>
-
-                <!-- Pagination -->
                 @if ($employees->hasPages())
                     <div class="card-footer bg-white border-top">
                         {{ $employees->appends(request()->query())->links() }}
                     </div>
                 @endif
             @else
-                <!-- Empty State -->
                 <div class="text-center py-5">
                     <i class="bi bi-inbox" style="font-size: 3rem; color: #ccc;"></i>
                     <h5 class="mt-3 text-muted">No employees found</h5>
-                    <p class="text-muted mb-3">Start by adding employee records</p>
                 </div>
             @endif
         </div>
     </div>
 </div>
 
+<!-- Reusable Modal for PDF Review (Auto-fit) -->
+<div class="modal fade" id="pdfModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header" id="pdfModalHeader">
+                <h5 class="modal-title" id="pdfModalTitle">PDF Viewer</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0" style="height:80vh; display:flex; justify-content:center; align-items:center;">
+                <embed id="pdfEmbed" src="" type="application/pdf" style="width:100%; height:100%;" />
+            </div>
+            <div class="modal-footer">
+                <form id="pdfActionForm" method="POST" class="d-inline">
+                    @csrf
+                    <button type="submit" class="btn btn-success me-2" name="action" value="approve">
+                        <i class="bi bi-check-circle me-1"></i> Approve
+                    </button>
+                    <button type="submit" class="btn btn-danger" name="action" value="reject">
+                        <i class="bi bi-x-circle me-1"></i> Reject
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
 .custom-shadow {
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.06);
-    transition: box-shadow 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.06);
+    transition: 0.3s ease;
     border-radius: 0.75rem;
 }
-.custom-shadow:hover {
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12), 0 4px 10px rgba(0, 0, 0, 0.08);
-    transform: translateY(-3px);
-}
-.table th, .table td {
-    padding: 1rem !important;
-}
-.table td {
-    font-size: 1.1rem;
-}
-.badge {
-    font-size: 1rem !important;
-    border-radius: 0.5rem !important;
-}
-.btn {
-    font-size: 1rem !important;
-}
+.custom-shadow:hover { transform: translateY(-3px); }
+.table td { font-size:1.1rem; padding:1rem !important; }
+.badge { font-size:1rem; border-radius:0.5rem; }
+.btn { font-size:1rem; }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const pdfModal = new bootstrap.Modal(document.getElementById('pdfModal'));
+    const pdfEmbed = document.getElementById('pdfEmbed');
+    const pdfTitle = document.getElementById('pdfModalTitle');
+    const pdfHeader = document.getElementById('pdfModalHeader');
+    const pdfActionForm = document.getElementById('pdfActionForm');
+
+    const routes = {
+        pdsAction: "{{ route('admin.employee.records.pds-action', ['id' => '__ID__']) }}",
+        salnAction: "{{ route('admin.employee.records.saln-action', ['id' => '__ID__']) }}"
+    };
+
+    document.querySelectorAll('.view-pdf-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = this.dataset.id;
+            const type = this.dataset.type;
+
+            pdfTitle.textContent = type.toUpperCase() + ' PDF';
+            pdfHeader.className = 'modal-header ' + (type === 'pds' ? 'bg-primary text-white' : 'bg-warning text-dark');
+
+            pdfEmbed.src = type === 'pds' 
+                ? `/admin/employee/pds/${id}` 
+                : `/admin/employee/saln/${id}`;
+
+            pdfActionForm.action = type === 'pds' 
+                ? routes.pdsAction.replace('__ID__', id)
+                : routes.salnAction.replace('__ID__', id);
+
+            pdfModal.show();
+        });
+    });
+});
+</script>
 @endsection

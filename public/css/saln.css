@@ -270,3 +270,8 @@ textarea {
     resize: none !important;
 }
 
+.underline-value {
+    text-decoration: underline;
+    text-decoration-thickness: 2px; /* optional: make it thicker */
+    text-underline-offset: 3px;     /* optional: adjust distance from text */
+}
