@@ -1,3 +1,5 @@
+<div id="education-bg-sections"></div>
+
 <tbody>
     <tr>
         <td colspan="62" class="pds-section-header">
@@ -218,54 +220,75 @@
     </tr>
     <input type="hidden" name="college_level" value="College">
 
-    {{-- Graduate Studies --}}
-    <tr>
-        <td colspan="6" class="pds-label" style="font-size: 10px">GRADUATE STUDIES</td>
-        <td colspan="15">
-            <input type="text" 
-                name="graduate_school" 
-                class="form-control pds-input-borderless"
-                value="{{ old('graduate_school', optional($educationalBackgrounds->where('level', 'GraduateStudies')->first())->school_name) }}">
+{{-- Graduate Studies --}}
+<tbody id="graduate-studies-container">
+    @foreach ($educationalBackgrounds->where('level', 'GraduateStudies') as $index => $graduate)
+    <tr class="graduate-studies-row">
+        <td colspan="6" class="pds-label" style="font-size: 10px">
+            GRADUATE STUDIES {{ $loop->iteration }}
         </td>
         <td colspan="15">
             <input type="text" 
-                name="graduate_degree" 
+                name="graduate[{{ $index }}][school]" 
                 class="form-control pds-input-borderless"
-                value="{{ old('graduate_degree', optional($educationalBackgrounds->where('level', 'GraduateStudies')->first())->degree_course) }}">
+                value="{{ old('graduate.'.$index.'.school', $graduate->school_name) }}">
+        </td>
+        <td colspan="15">
+            <input type="text" 
+                name="graduate[{{ $index }}][degree]" 
+                class="form-control pds-input-borderless"
+                value="{{ old('graduate.'.$index.'.degree', $graduate->degree_course) }}">
         </td>
         <td colspan="5">
             <input type="number" 
-                name="graduate_period_from" 
+                name="graduate[{{ $index }}][period_from]" 
                 class="form-control pds-input-borderless"
-                value="{{ old('graduate_period_from', optional($educationalBackgrounds->where('level', 'GraduateStudies')->first())->period_from) }}">
+                value="{{ old('graduate.'.$index.'.period_from', $graduate->period_from) }}">
         </td>
         <td colspan="5">
             <input type="number" 
-                name="graduate_period_to" 
+                name="graduate[{{ $index }}][period_to]" 
                 class="form-control pds-input-borderless"
-                value="{{ old('graduate_period_to', optional($educationalBackgrounds->where('level', 'GraduateStudies')->first())->period_to) }}">
+                value="{{ old('graduate.'.$index.'.period_to', $graduate->period_to) }}">
         </td>
         <td colspan="5">
             <input type="text" 
-                name="graduate_highest_level" 
+                name="graduate[{{ $index }}][highest_level]" 
                 class="form-control pds-input-borderless"
-                value="{{ old('graduate_highest_level', optional($educationalBackgrounds->where('level', 'GraduateStudies')->first())->highest_level_unit_earned) }}">
+                value="{{ old('graduate.'.$index.'.highest_level', $graduate->highest_level_unit_earned) }}">
         </td>
         <td colspan="6">
             <input type="number" 
-                name="graduate_year_graduated" 
+                name="graduate[{{ $index }}][year_graduated]" 
                 class="form-control pds-input-borderless"
-                value="{{ old('graduate_year_graduated', optional($educationalBackgrounds->where('level', 'GraduateStudies')->first())->year_graduated) }}">
+                value="{{ old('graduate.'.$index.'.year_graduated', $graduate->year_graduated) }}">
         </td>
         <td colspan="5">
             <input type="text" 
-                name="graduate_honors" 
+                name="graduate[{{ $index }}][honors]" 
                 class="form-control pds-input-borderless"
-                value="{{ old('graduate_honors', optional($educationalBackgrounds->where('level', 'GraduateStudies')->first())->scholarship_honors) }}">
+                value="{{ old('graduate.'.$index.'.honors', $graduate->scholarship_honors) }}">
         </td>
     </tr>
-    <input type="hidden" name="graduate_level" value="GraduateStudies">
+    <input type="hidden" name="graduate[{{ $index }}][id]" value="{{ $graduate->id }}">
+    <input type="hidden" name="graduate[{{ $index }}][level]" value="GraduateStudies">
+    @endforeach
+
+        <!-- ✅ Moved buttons INSIDE the same <tbody> -->
+    <tr>
+        <td colspan="62" class="text-center">
+            <div class="d-flex justify-content-center gap-2">
+                <button type="button" id="add-graduate-btn" class="btn btn-sm btn-outline-primary">
+                    + Add Graduate Studies
+                </button>
+                <button type="button" id="remove-graduate-btn" class="btn btn-sm btn-outline-danger">
+                    − Remove Graduate Studies
+                </button>
+            </div>
+        </td>
+    </tr>
 </tbody>
+
 
 <style>
 .hidden-section {
@@ -274,12 +297,13 @@
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () {
+    // ======= EDUCATIONAL BACKGROUND TOGGLE =======
     const toggleBtn = document.getElementById('toggle-education-bg');
     const sectionBody = document.getElementById('education-bg-body');
     const icon = document.getElementById('education-bg-icon');
 
-    // Restore last state from localStorage
+    // Restore toggle state
     let state = localStorage.getItem('education_section_open');
     if (state === 'open') {
         sectionBody.classList.remove('hidden-section');
@@ -289,7 +313,6 @@ document.addEventListener('DOMContentLoaded', function () {
         icon.textContent = '+';
     }
 
-    // Toggle section and save state
     toggleBtn.addEventListener('click', function () {
         sectionBody.classList.toggle('hidden-section');
         if (sectionBody.classList.contains('hidden-section')) {
@@ -300,5 +323,62 @@ document.addEventListener('DOMContentLoaded', function () {
             localStorage.setItem('education_section_open', 'open');
         }
     });
+
+    // ======= DYNAMIC GRADUATE STUDIES SECTION =======
+// ======= DYNAMIC GRADUATE STUDIES SECTION =======
+    const addGraduateBtn = document.getElementById('add-graduate-btn');
+    const removeGraduateBtn = document.getElementById('remove-graduate-btn');
+    const graduateContainer = document.getElementById('graduate-studies-container');
+
+    // Track number of rows
+    let graduateIndex = graduateContainer.querySelectorAll('.graduate-studies-row').length;
+
+    // Create new graduate study row
+    function createGraduateRow(index) {
+        const newRow = document.createElement('tr');
+        newRow.classList.add('graduate-studies-row');
+
+        newRow.innerHTML = `
+            <td colspan="6" class="pds-label" style="font-size: 10px">
+                GRADUATE STUDIES ${index + 1}
+            </td>
+            <td colspan="15"><input type="text" name="graduate[${index}][school]" class="form-control pds-input-borderless"></td>
+            <td colspan="15"><input type="text" name="graduate[${index}][degree]" class="form-control pds-input-borderless"></td>
+            <td colspan="5"><input type="number" name="graduate[${index}][period_from]" class="form-control pds-input-borderless"></td>
+            <td colspan="5"><input type="number" name="graduate[${index}][period_to]" class="form-control pds-input-borderless"></td>
+            <td colspan="5"><input type="text" name="graduate[${index}][highest_level]" class="form-control pds-input-borderless"></td>
+            <td colspan="6"><input type="number" name="graduate[${index}][year_graduated]" class="form-control pds-input-borderless"></td>
+            <td colspan="5">
+                <input type="text" name="graduate[${index}][honors]" class="form-control pds-input-borderless">
+                <input type="hidden" name="graduate[${index}][level]" value="GraduateStudies">
+            </td>
+        `;
+
+        // Insert the new row before the buttons row
+        const buttonsRow = graduateContainer.querySelector('tr:last-child');
+        graduateContainer.insertBefore(newRow, buttonsRow);
+    }
+
+    // Add new row
+    addGraduateBtn.addEventListener('click', function () {
+        createGraduateRow(graduateIndex);
+        graduateIndex++;
+    });
+
+    // Remove last row (keep at least one)
+    removeGraduateBtn.addEventListener('click', function () {
+        const rows = graduateContainer.querySelectorAll('.graduate-studies-row');
+        if (rows.length > 1) {
+            rows[rows.length - 1].remove();
+            graduateIndex--;
+            // Re-label remaining rows
+            graduateContainer.querySelectorAll('.graduate-studies-row').forEach((row, idx) => {
+                row.querySelector('.pds-label').textContent = `GRADUATE STUDIES ${idx + 1}`;
+            });
+        } else {
+            alert('At least one Graduate Studies record must remain.');
+        }
+    });
 });
+
 </script>

@@ -325,34 +325,91 @@ class PDSController extends Controller
                 'mother_middle_name' => $request->input('mother_middle_name') ?? null,
             ]
         );
+// --- Educational Background ---
+// Single-entry levels (Elementary, Secondary, etc.)
+$singleLevels = [
+    'Elementary'      => 'elementary',
+    'Secondary'       => 'secondary',
+    'VocationalCourse'=> 'vocational',
+    'College'         => 'college',
+];
 
-
-        // --- Educational Background ---
-        $levels = [
-            'Elementary'      => 'elementary',
-            'Secondary'       => 'secondary',
-            'VocationalCourse'=> 'vocational',
-            'College'         => 'college',
-            'GraduateStudies' => 'graduate',
-        ];
-
-        foreach ($levels as $level => $fieldPrefix) {
-            EducationalBackground::updateOrCreate(
-                [
-                    'personal_information_id' => $personalInformation->id,
-                    'level' => $level, // ENUM value stored in DB
-                ],
-                [
-                    'school_name'               => $request->input("{$fieldPrefix}_school") ?? null,
-                    'degree_course'             => $request->input("{$fieldPrefix}_degree") ?? null,
-                    'period_from'               => $request->input("{$fieldPrefix}_period_from") ?? null,
-                    'period_to'                 => $request->input("{$fieldPrefix}_period_to") ?? null,
-                    'highest_level_unit_earned' => $request->input("{$fieldPrefix}_highest_level") ?? null,
-                    'year_graduated'            => $request->input("{$fieldPrefix}_year_graduated") ?? null,
-                    'scholarship_honors'        => $request->input("{$fieldPrefix}_honors") ?? null,
-                ]
-            );
+foreach ($singleLevels as $level => $fieldPrefix) {
+    EducationalBackground::updateOrCreate(
+        [
+            'personal_information_id' => $personalInformation->id,
+            'level' => $level,
+        ],
+        [
+            'school_name'               => $request->input("{$fieldPrefix}_school"),
+            'degree_course'             => $request->input("{$fieldPrefix}_degree"),
+            'period_from'               => $request->input("{$fieldPrefix}_period_from"),
+            'period_to'                 => $request->input("{$fieldPrefix}_period_to"),
+            'highest_level_unit_earned' => $request->input("{$fieldPrefix}_highest_level"),
+            'year_graduated'            => $request->input("{$fieldPrefix}_year_graduated"),
+            'scholarship_honors'        => $request->input("{$fieldPrefix}_honors"),
+        ]
+    );
 }
+// 1) Fetch all existing graduate studies for this person
+$existingGraduate = EducationalBackground::where('personal_information_id', $personalInformation->id)
+    ->where('level', 'GraduateStudies')
+    ->orderBy('id')
+    ->get();
+
+// 2) Multiple Graduate Studies entries from request
+$graduateStudies = $request->input('graduate', []);
+
+// 3) Track new IDs for deletion of extra rows
+$newIds = [];
+
+// 4) Update or create graduate study entries
+foreach ($graduateStudies as $index => $graduate) {
+    if (!empty($graduate['id'])) {
+        $record = EducationalBackground::find($graduate['id']);
+        if ($record) {
+            // Always update, even if blank
+            $record->update([
+                'school_name'               => $graduate['school'] ?? null,
+                'degree_course'             => $graduate['degree'] ?? null,
+                'period_from'               => $graduate['period_from'] ?? null,
+                'period_to'                 => $graduate['period_to'] ?? null,
+                'highest_level_unit_earned' => $graduate['highest_level'] ?? null,
+                'year_graduated'            => $graduate['year_graduated'] ?? null,
+                'scholarship_honors'        => $graduate['honors'] ?? null,
+            ]);
+            $newIds[] = $record->id;
+            continue;
+        }
+    }
+
+    // Otherwise, create a new record
+    $created = EducationalBackground::create([
+        'personal_information_id'   => $personalInformation->id,
+        'level'                     => 'GraduateStudies',
+        'school_name'               => $graduate['school'] ?? null,
+        'degree_course'             => $graduate['degree'] ?? null,
+        'period_from'               => $graduate['period_from'] ?? null,
+        'period_to'                 => $graduate['period_to'] ?? null,
+        'highest_level_unit_earned' => $graduate['highest_level'] ?? null,
+        'year_graduated'            => $graduate['year_graduated'] ?? null,
+        'scholarship_honors'        => $graduate['honors'] ?? null,
+    ]);
+
+    $newIds[] = $created->id;
+}
+
+// 5) Delete only extra rows (not the first one)
+$firstGraduateId = $existingGraduate->first()?->id;
+
+EducationalBackground::where('personal_information_id', $personalInformation->id)
+    ->where('level', 'GraduateStudies')
+    ->whereNotIn('id', $newIds)
+    ->when($firstGraduateId, function ($q) use ($firstGraduateId) {
+        $q->where('id', '!=', $firstGraduateId); // protect the first row
+    })
+    ->delete();
+
 
 
 

@@ -222,23 +222,50 @@ public function download($userId = null)
             
 
             if ($pageNo === 1) {
-                $pdf->SetFont('Arial', '', 8);
+                $pdf->SetFont('Arial', '', 10);
                 $pdf->SetTextColor(0, 0, 0);
 
                 // ---- Personal Info ----
-                $pdf->Text(55, 41.5, $last_name);
-                $pdf->Text(55, 47, $first_name);
-                $pdf->Text(55, 52, $middle_name);
-                $pdf->Text(180, 47, $suffix);
-                $pdf->Text(55, 59, $date_of_birth);
-                $pdf->Text(55, 66, $place_of_birth);
-                $pdf->Text(55, 89.5, $height);
-                $pdf->Text(55, 95, $weight);
-                $pdf->Text(55, 100.5, $blood_type);
-                $pdf->Text(55, 136, $agency_employee_no);
-                $pdf->Text(122, 124.5, $telephone_number);
-                $pdf->Text(122, 130.5, $mobile_number);
-                $pdf->Text(122, 136, $email);
+                $pdf->SetFont('Arial', '', 10); // set font
+                $pdf->SetXY(44.9, 47.6); // move to position
+                $pdf->Cell(162, 6, $last_name, 0, 0, 'L'); // (width, height, text, border, ln, align)
+
+                $pdf->SetXY(44.9, 53.8);
+                $pdf->Cell(113.4, 6, $first_name, 0, 0, 'L');
+
+                $pdf->SetXY(47, 62);
+                $pdf->Cell(50, 6, $middle_name, 1, 0, 'L');
+
+                $pdf->SetXY(185, 56);
+                $pdf->Cell(15, 6, $suffix, 1, 0, 'L');
+
+                $pdf->SetXY(47, 70);
+                $pdf->Cell(50, 6, $date_of_birth, 1, 0, 'L');
+
+                $pdf->SetXY(55, 66);
+                $pdf->Cell(50, 6, $place_of_birth, 1, 0, 'L');
+
+                $pdf->SetXY(55, 89.5);
+                $pdf->Cell(25, 6, $height, 1, 0, 'L');
+
+                $pdf->SetXY(55, 95);
+                $pdf->Cell(25, 6, $weight, 1, 0, 'L');
+
+                $pdf->SetXY(55, 100.5);
+                $pdf->Cell(25, 6, $blood_type, 1, 0, 'L');
+
+                $pdf->SetXY(55, 136);
+                $pdf->Cell(25, 6, $agency_employee_no, 1, 0, 'L');
+
+                $pdf->SetXY(122, 124.5);
+                $pdf->Cell(40, 6, $telephone_number, 1, 0, 'L');
+
+                $pdf->SetXY(122, 130.5);
+                $pdf->Cell(40, 6, $mobile_number, 1, 0, 'L');
+
+                $pdf->SetXY(122, 136);
+                $pdf->Cell(50, 6, $email, 1, 0, 'L');
+
 
                 // ---- Parents ----
                 $pdf->Text(55, 180.5, $father_surname);
